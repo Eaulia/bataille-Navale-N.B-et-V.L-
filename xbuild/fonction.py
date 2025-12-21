@@ -50,7 +50,7 @@ def create_menu(fenetre):
     """
     def alert():
         showinfo("alerte", "Bravo!")  
-        
+
     menubar = tk.Menu(fenetre)
 
     menu1 = tk.Menu(menubar, tearoff=0)

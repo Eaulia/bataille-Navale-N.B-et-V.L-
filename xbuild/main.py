@@ -13,6 +13,7 @@ f1 = tk.Frame(root); f1.pack(fill='both', expand=True)
 f2 = tk.Frame(root)
 f3 = tk.Frame(root)
 
+
 # BOUTONS
 fn.bouton(f1, [' ','Start game',' '], 200, 50, 16, 2, 'bold', 0.3, command=lambda: fn.swap_frames(f1,f2))
 fn.bouton(f1, [' ','Parametres',' '], 200, 50, 16, 2, 'bold', 0.5, command=lambda: fn.swap_frames(f1,f3))

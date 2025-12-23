@@ -43,32 +43,28 @@ def bouton(parent, text_lines, wid, hei, size1, size2, boldd, relly, command=Non
         btn.bind('<Button-1>', _on_click)
     return btn
 
-#BARRE DE MENU
+
+# BARRE DE MENU
 def create_menu(fenetre):
-    """
-    fenetre: fenetre principale
-    """
+
     def alert():
-        showinfo("alerte", "Bravo!")  
+        showinfo("Alerte", "Bravo!")
 
-#Barre des règles
-def reglesjeu():
-    showinfo("Règles du jeu", "Les règles du jeu sont simples : Chaque joueur place ses navires sur une grille. À tour de rôle, ils tirent des missiles sur les coordonnées de la grille adverse. Le but est de couler tous les navires de l'adversaire avant que le sien ne soit coulé.")
-
+    def reglesjeu():
+        showinfo(
+            "Règles du jeu",
+            "Chaque joueur place ses navires sur une grille.\n"
+            "À tour de rôle, ils tirent sur la grille adverse.\n"
+            "Le but est de couler tous les navires ennemis."
+        )
 
     menubar = tk.Menu(fenetre)
 
-    menu1 = tk.Menu(menubar, tearoff=0)
-    menu1.add_command(label="Nouvelle partie contre une ia", command=alert)
-    menu1.add_command(label="Nouvelle partie contre un joueur", command=alert)
-    menu1.add_separator()
-    menu1.add_command(label="Quitter", command=fenetre.quit)
-    menubar.add_cascade(label="Game", menu=menu1)
 
-    menu2 = tk.Menu(menubar, tearoff=0)
-    menu2.add_command(label="Regles du jeu", command=reglesjeu)
-    menu2.add_command(label="A propos", command=alert)
-    menubar.add_cascade(label="Help", menu=menu2)
+    menu1 = tk.Menu(menubar, tearoff=0)
+    menu1.add_command(label="Règles du jeu", command=reglesjeu)
+    menu1.add_command(label="À propos", command=alert)
+    menubar.add_cascade(label="Help", menu=menu1)
 
     fenetre.config(menu=menubar)
 

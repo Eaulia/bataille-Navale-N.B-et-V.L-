@@ -55,6 +55,7 @@ def create_menu(fenetre):
 def reglesjeu():
     showinfo("Règles du jeu", "Les règles du jeu sont simples : Chaque joueur place ses navires sur une grille. À tour de rôle, ils tirent des missiles sur les coordonnées de la grille adverse. Le but est de couler tous les navires de l'adversaire avant que le sien ne soit coulé.")
 
+
     menubar = tk.Menu(fenetre)
 
     menu1 = tk.Menu(menubar, tearoff=0)

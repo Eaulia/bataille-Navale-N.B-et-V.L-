@@ -74,3 +74,24 @@ def panel(p, wid, hei, bg_color, content):
     panel.pack_propagate(False)
     tk.Label(panel, text=content, background=bg_color).pack(expand=True)
     return panel
+
+def appliquer_theme(theme, root, f1, f2, f3, boutons):
+    global theme_actuel
+    theme_actuel = theme
+
+    # pour la fenêtre
+    root.configure(bg=theme["bg"])
+
+    # pour les frames
+    f1.configure(bg=theme["frame"])
+    f2.configure(bg=theme["frame"])
+    f3.configure(bg=theme["frame"])
+
+    # pour la grille boutons 
+    for ligne in boutons:
+        for b in ligne:
+            b.config(bg=theme["grid"])
+
+#pour tester le clic sur une case du grillage
+def clic_case(ligne, colonne):
+    print(ligne, colonne)

@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter.messagebox import showinfo
 
+
 def swap_frames(hide, show):
     """Echanger un frame en arrière-plan et un frame au premier plan.
     .pack_forget() sert à cacher un frame
@@ -9,11 +10,13 @@ def swap_frames(hide, show):
     hide.pack_forget()
     show.pack(fill='both', expand=True)
 
+
+
 # BOUTON PERSONNALISÉ 
 def bouton(parent, text_lines, wid, hei, size1, size2, boldd, relly, command=None):
     """
     parent: frame parent
-    text_lines: text à afficher (liste de lignes)
+    text_lines: texte à afficher (liste de lignes)
     wid: longueur du bouton
     hei: hauteur du bouton
     size1: taille du texte principal
@@ -24,24 +27,32 @@ def bouton(parent, text_lines, wid, hei, size1, size2, boldd, relly, command=Non
     .bind() lie un événement (ici clic gauche) à une fonction
     """
     btn = tk.Frame(parent, width=wid, height=hei, bd=2, relief='raised')
-    btn.place(relx=0.5, rely= relly, anchor='center'); btn.pack_propagate(False)
+    btn.place(relx=0.5, rely= relly, anchor='center')
+    btn.pack_propagate(False)
+
     for line in text_lines:
         if text_lines[1] == line:
-            tk.Label(btn, text=line, font=('Helvetica',size1,boldd)).pack()
+            tk.Label(btn, text=line, font=('Helvetica', size1, boldd)).pack()
         else:
-            tk.Label(btn, text=line, font=('Helvetica',size2)).pack()
+            tk.Label(btn, text=line, font=('Helvetica', size2)).pack()
+
     if command:
         def _on_click(event, cmd=command):
             """
-            event: evenement (ex. clic gauche)
+            event: événement (ex. clic gauche)
             cmd: fonction à appeler
             _on_click c'est si on clique sur le bouton 
             """
             cmd()
+        
         for w in btn.winfo_children():
             w.bind('<Button-1>', _on_click)
         btn.bind('<Button-1>', _on_click)
+
+    btn.pack(fill='x', padx=10, pady=10)  # Faire en sorte que le bouton prenne toute la largeur
+
     return btn
+
 
 
 # BARRE DE MENU
@@ -67,6 +78,8 @@ def create_menu(fenetre):
     menubar.add_cascade(label="Help", menu=menu1)
 
     fenetre.config(menu=menubar)
+
+
 
 # PANNEAUX
 def panel(p, wid, hei, bg_color, content):

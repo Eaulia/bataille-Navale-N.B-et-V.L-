@@ -6,6 +6,7 @@ import fonction as fn
 THEME_BLEU = {"bg": "#006E6E","frame": "#006E6E","grid": "lightblue","button": "#4FA3A3","text": "white"}
 THEME_SOMBRE = {"bg": "#1E1E1E","frame": "#1E1E1E","grid": "#444444","button": "#333333","text": "white"}
 THEME_CLASSIQUE = {"bg": "#F0F0F0","frame": "#F0F0F0","grid": "white","button": "#E0E0E0","text": "black"}
+THEME_ROSE = {"bg": "#FFB6C1","frame": "#FFB6C1","grid": "#FFDDEE","button": "#FF99AA","text": "black"}
 
 # thème courant
 theme_actuel = THEME_BLEU
@@ -77,6 +78,12 @@ fn.bouton(
     f3, [" ", "Thème Classique", " "],
     200, 50, 15, 2, "bold", 0.7,
     command=lambda: changer_theme(THEME_CLASSIQUE)
+)
+
+fn.bouton(
+    f3, [" ", "Thème Rose", " "],
+    200, 50, 15, 2, "bold", 0.9,
+    command=lambda: changer_theme(THEME_ROSE)
 )
 
 tk.Button(f3, text='Retour', command=lambda: fn.swap_frames(f3, f1)).pack(pady=5)

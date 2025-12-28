@@ -82,28 +82,38 @@ def create_menu(fenetre):
 
 
 # PANNEAUX
-def panel(p, wid, hei, bg_color, content):
-    panel = tk.Frame(p, width=wid, height=hei, background=bg_color)
+def panel(p, wid, hei, theme, content):
+    panel = tk.Frame(p, width=wid, height=hei, bg=theme["frame"])
     panel.pack_propagate(False)
-    tk.Label(panel, text=content, background=bg_color).pack(expand=True)
+    tk.Label(panel, text=content, bg=theme["frame"], fg=theme["text"]).pack(expand=True)
     return panel
 
-def appliquer_theme(theme, root, f1, f2, f3, boutons):
-    global theme_actuel
-    theme_actuel = theme
 
+def appliquer_theme(theme, root, frames, boutons):
     # pour la fenêtre
     root.configure(bg=theme["bg"])
 
-    # pour les frames
-    f1.configure(bg=theme["frame"])
-    f2.configure(bg=theme["frame"])
-    f3.configure(bg=theme["frame"])
+    # pour les frames + widgets
+    for frame in frames:
+        frame.configure(bg=theme["frame"])
 
-    # pour la grille boutons 
-    for ligne in boutons:
-        for b in ligne:
-            b.config(bg=theme["grid"])
+        for widget in frame.winfo_children():
+            if isinstance(widget, tk.Label):
+                widget.configure(bg=theme["frame"], fg=theme["text"])
+            elif isinstance(widget, tk.Button):
+                widget.configure(bg=theme["button"], fg=theme["text"])
+            elif isinstance(widget, tk.Frame):
+                widget.configure(bg=theme["button"])
+
+            # pourrecolorer  à l'intérieur des boutons
+                for sub in widget.winfo_children():
+                    if isinstance(sub, tk.Label):
+                        sub.configure(
+                            bg=theme["button"],
+                            fg=theme["text"]
+                        )
+
+
 
 #pour tester le clic sur une case du grillage
 def clic_case(ligne, colonne):

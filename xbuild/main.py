@@ -33,10 +33,8 @@ f1.pack(fill='both', expand=True)
 # liste de tous les frames (IMPORTANT pour les thèmes)
 frames = [f1, f2, f3, f4, f5]
 
-
 # MENU
 fn.create_menu(root)
-
 
 # BOUTONS FRAME 1
 fn.bouton(
@@ -89,6 +87,9 @@ fn.bouton(
 tk.Button(f3, text='Retour', command=lambda: fn.swap_frames(f3, f1)).pack(pady=5)
 
 
+
+
+
 # FRAME 4 (intermediaire pour choisir le mode de jeu)
 tk.Label(f4, text="Choisir le mode de jeu", font=('Arial', 14, 'bold')).pack(pady=20)
 
@@ -98,7 +99,6 @@ fn.bouton(
     200, 50, 16, 2, "bold", 0.3,
     command=lambda: fn.swap_frames(f4, f5)
 )
-
 fn.bouton(
     f4, [" ", "Contre un autre joueur", " "],
     200, 50, 16, 2, "bold", 0.5,
@@ -107,7 +107,10 @@ fn.bouton(
 tk.Button(f4, text='Retour', command=lambda: fn.swap_frames(f4, f1)).pack(pady=5)
 
 
-# FRAME 2 
+
+
+
+# FRAME 2, joueur contre joueur
 tk.Label(f2, text='Bienvenue dans ma Bataille Navale ;D', font=('Arial',14,'bold')).pack(pady=10)
 
 # PANNEAUX
@@ -146,7 +149,10 @@ for i in range(10):
 tk.Button(f2, text='Retour', command=lambda: fn.swap_frames(f2, f4)).pack(pady=5)
 
 
-# FRAME 5 
+
+
+
+# FRAME 5, joueur contre IA
 tk.Label(f5, text='Bienvenue dans ma Bataille Navale ;D', font=('Arial',14,'bold')).pack(pady=10)
 
 p = tk.PanedWindow(f5, orient=tk.HORIZONTAL, width=665, height=440)

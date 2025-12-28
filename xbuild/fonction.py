@@ -71,7 +71,6 @@ def create_menu(fenetre):
 
     menubar = tk.Menu(fenetre)
 
-
     menu1 = tk.Menu(menubar, tearoff=0)
     menu1.add_command(label="Règles du jeu", command=reglesjeu)
     menu1.add_command(label="À propos", command=alert)
@@ -118,3 +117,5 @@ def appliquer_theme(theme, root, frames, boutons):
 #pour tester le clic sur une case du grillage
 def clic_case(ligne, colonne):
     print(ligne, colonne)
+
+

@@ -10,10 +10,10 @@ def start_pvp():
 
 
 # différents thèmes de couleurs
-THEME_BLEU = {"bg": "#006E6E","frame": "#006E6E","grid": "lightblue","button": "#4FA3A3","text": "white"}
-THEME_SOMBRE = {"bg": "#1E1E1E","frame": "#1E1E1E","grid": "#444444","button": "#333333","text": "white"}
-THEME_CLASSIQUE = {"bg": "#F0F0F0","frame": "#F0F0F0","grid": "white","button": "#E0E0E0","text": "black"}
-THEME_ROSE = {"bg": "#FFB6C1","frame": "#FFB6C1","grid": "#FFDDEE","button": "#FF99AA","text": "black"}
+THEME_BLEU = {"bg": "#006E6E","frame": "#006E6E","grid": "lightblue","button": "#4FA3A3","text": "white","boat": "white"}
+THEME_SOMBRE = {"bg": "#1E1E1E","frame": "#1E1E1E","grid": "#444444","button": "#333333","text": "white","boat": "white"}
+THEME_CLASSIQUE = {"bg": "#F0F0F0","frame": "#F0F0F0","grid": "white","button": "#E0E0E0","text": "black","boat": "white"}
+THEME_ROSE = {"bg": "#FFB6C1","frame": "#FFB6C1","grid": "#FFDDEE","button": "#FF99AA","text": "black","boat": "white"}
 
 # thème courant
 theme_actuel = THEME_BLEU
@@ -189,7 +189,8 @@ for i in range(10):
             width=2,
             height=2,
             bg=theme_actuel["grid"],
-            command=lambda l=i, c=j: fn.clic_placement_bateau(l, c, boutons)
+            command=lambda l=i, c=j: fn.clic_placement_bateau(l, c, boutons_ia)
+
         )
         b.grid(row=i, column=j, sticky="nsew")
         ligne.append(b)

@@ -114,11 +114,8 @@ def appliquer_theme(theme, root, frames, boutons):
                             bg=theme["button"],
                             fg=theme["text"])
 
-            #et pr recolorer les boutons de la grille
-            refresh_grille(boutons, jeu.grille_joueur1, theme_actuel)
-                        
-
-
+    #et pr recolorer les boutons de la grille
+    refresh_grille(boutons, jeu.grille_joueur1, theme)
 
 #en parcourant la grille, on met à jour les couleurs des boutons en fonction de l'état de la grille
 def refresh_grille(boutons, grille, theme): 
@@ -126,26 +123,23 @@ def refresh_grille(boutons, grille, theme):
         for j in range(len(grille[i])):
             etat = grille[i][j]
             if etat == jeu.BATEAU:
-                boutons[i][j].configure(bg="white")
+                boutons[i][j].configure(bg=theme["boat"])
             else:
                 boutons[i][j].configure(bg=theme["grid"])
                 
 
-
-#quand on clique dans la grille pour placer le bateau d'un joueur
+# demander quel bateau et orientation
 def clic_placement_bateau(ligne, colonne, boutons):
-
-    # demander quel bateau et orientation
     nom_bateau, horizontal = demander_bateau_et_orientation()
     if nom_bateau is None:
         return  # annulation
-    taille = jeu.taille_bateau(nom_bateau) # obtenir la taille du bateau avc le nom
 
+    taille = jeu.taille_bateau(nom_bateau) # obtenir la taille du bateau avec le nom
 
-    taille = jeu.bateau_en_cours_taille()
-    if taille is None:
+    if taille is None: # on vérifie si tous les bateaux ne sont pas déjà placés
         print("Tous les bateaux sont déjà placés.")
-        return # on vérifie si tous les bateaux sont pas déjà placés
+        return
+
 
     # colorier les cases du bateau
     ok = jeu.placer_bateau(jeu.grille_joueur1, ligne, colonne, taille, horizontal)

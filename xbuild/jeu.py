@@ -1,84 +1,108 @@
-#nouveau dossier après avoir fini l'interface etc, je commence vraiment le jeu
-#ici on gère les éléments de jeu (les grilles, les bateaux, les tirs, les tours et la victoire)
+# nouveau dossier après avoir fini l'interface etc, je commence vraiment le jeu
+# ici on gère les éléments de jeu
+# (les grilles, les bateaux, les tirs, les tours et la victoire)
 
-#les tours 
-joueur_actuel = 1
+# pour les tours
+joueur_actuel = 1  # 1 ou 2
 
+#chage le tour du joueur
 def changer_tour():
     global joueur_actuel
     joueur_actuel = 2 if joueur_actuel == 1 else 1
 
 
-# les bateaux 
-BATEAUX_PRESET = {
-    "porte_avions": 5,
-    "croiseur": 4,
-    "sous_marin": 3,
-    "sous_marin_2": 3,
-    "torpilleur": 2
+# gestion des bateaux
+# tailles des bateaux (clé = nom, valeur = taille)
+TAILLES_BATEAUX = {
+    "bateaudetaille_5": 5,
+    "bateaudetaille_4": 4,
+    "bateaudetaille_3": 3,
+    "deuxiemebateaudetaille_3": 3,
+    "bateaudetaille_2": 2
 }
 
-#constantes
+# liste complète des bateaux 
+LISTE_BATEAUX = list(TAILLES_BATEAUX.keys())
+
+# liste des bateaux qu'il reste à placer
+bateaux_restants = LISTE_BATEAUX.copy()
+
+# couleur utilisée par l'interface pour afficher un bateau
+COULEUR_BATEAU = "#4CAF50"  
+
+
+# constantes pour les états des cases de la grille
 VIDE = 0
 BATEAU = 1
 TOUCHE = 2
 RATE = 3
 
-#grilles  vides pour les deux joueurs
-grille_joueur1 = [[0]*10 for _ in range(10)]  # grille vide pour le joueur 1
-grille_joueur2 = [[0]*10 for _ in range(10)] # grille vide pour le joueur 2
 
-#là les fonctions sont chiantes mais c'est juste pour pas qu'on puisse placer plus de bateaux que prévu
+# grilles vides pour les deux joueurs
+grille_joueur1 = [[VIDE] * 10 for _ in range(10)]
+grille_joueur2 = [[VIDE] * 10 for _ in range(10)]
 
-def taille_bateau(nom): #renvoie la taille du bateau en fonction de son nom
-    return BATEAUX_PRESET.get(nom, None)
+#avoir la grille correspondant au joueur
+def grille_joueur(joueur):
+    return grille_joueur1 if joueur == 1 else grille_joueur2
 
-# renvoie taille du bateau qu'on place actuellement
-def bateau_en_cours_taille():
-    if indice_bateau < len(liste_bateaux):
-        return liste_bateaux[indice_bateau]
-    return None
 
-#true si le bateau peut être placé partir de (ligne, col) dans la grille sans dépasser
+#avoir la taille du bateau à partir de son nom
+def taille_bateau(nom):
+    return TAILLES_BATEAUX.get(nom)
+
+# vérifier si un bateau peut être placé sans dépasser ou chevaucher un autre bateau
 def peut_placer(grille, ligne, col, taille, horizontal=True):
+    
     if horizontal:
         if col + taille > 10:
             return False
         for i in range(taille):
-            if grille[ligne][col+i] == BATEAU:
+            if grille[ligne][col + i] == BATEAU:
                 return False
     else:
         if ligne + taille > 10:
             return False
         for i in range(taille):
-            if grille[ligne+i][col] == BATEAU:
+            if grille[ligne + i][col] == BATEAU:
                 return False
     return True
 
-#place ENFFIN un bateau dans la grille, si possible
-def placer_bateau(grille, ligne, col, taille, horizontal):
-    if not peut_placer(grille, ligne, col, taille, horizontal): #on verifie
+# placer un bateau sur la grille du joueur si possible
+def placer_bateau(joueur, nom_bateau, ligne, col, horizontal):
+    global bateaux_restants
+
+    if nom_bateau not in bateaux_restants:
+        return False  # bateau déjà placé
+
+    taille = taille_bateau(nom_bateau)
+    if taille is None:
         return False
 
+    grille = grille_joueur(joueur)
+
+    if not peut_placer(grille, ligne, col, taille, horizontal):
+        return False
+
+    # placement réel
     if horizontal:
         for i in range(taille):
-            grille[ligne][col+i] = BATEAU
+            grille[ligne][col + i] = BATEAU
     else:
         for i in range(taille):
-            grille[ligne+i][col] = BATEAU
+            grille[ligne + i][col] = BATEAU
+
+    # on enlève le bateau de la liste
+    bateaux_restants.remove(nom_bateau)
     return True
 
+# réinitialiser la liste des bateaux à placer
+def reset_bateaux():
+    global bateaux_restants
+    bateaux_restants = LISTE_BATEAUX.copy()
 
 
-# pour placer bateau dans la grille
-def placer_bateau_j1(ligne, colonne) :
-    if grille_joueur1[ligne][colonne] == 0:
-        grille_joueur1[ligne][colonne] = BATEAU
-        return True #case vide donc on peut placer le bateau
-    return False #case déjà occupée
-
-
-#déterminer qui a gagné
+# determiner si un joueur a perdu (plus de bateaux)
 def a_perdu(grille):
     for ligne in grille:
         if BATEAU in ligne:

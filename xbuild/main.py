@@ -201,9 +201,10 @@ tk.Button(f5, text='Retour', command=lambda: fn.swap_frames(f5, f4)).pack(pady=5
 p.add(panel1)
 p.add(panel2)
 
-root.mainloop()
-
 import jeu
 
 def place_bateau(ligne, colonne, bouton):
     jeu.clic_case(ligne, colonne, boutons)
+
+root.mainloop()
+

@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter.messagebox import showinfo
 from tkinter.simpledialog import askstring
 import jeu
+from tkinter import messagebox
 
 #askstring c pour dmd qlq chose, ici l'orientation du bateau
 
@@ -115,7 +116,8 @@ def appliquer_theme(theme, root, frames, boutons):
                             fg=theme["text"])
 
     #et pr recolorer les boutons de la grille
-    refresh_grille(boutons, jeu.grille_joueur1, theme)
+    refresh_grille(boutons, jeu.grille_joueur(jeu.joueur_actuel), theme)
+
 
 #en parcourant la grille, on met à jour les couleurs des boutons en fonction de l'état de la grille
 def refresh_grille(boutons, grille, theme): 
@@ -130,49 +132,76 @@ def refresh_grille(boutons, grille, theme):
 
 # demander quel bateau et orientation
 def clic_placement_bateau(ligne, colonne, boutons):
+
+    #demander le bateau et l'orientation
     nom_bateau, horizontal = demander_bateau_et_orientation()
     if nom_bateau is None:
-        return  # annulation
+        return  # annulation ou plus de bateaux
 
-    taille = jeu.taille_bateau(nom_bateau) # obtenir la taille du bateau avec le nom
-
-    if taille is None: # on vérifie si tous les bateaux ne sont pas déjà placés
+    #récupérer la taille du bateau
+    taille = jeu.taille_bateau(nom_bateau)
+    if taille is None:
         print("Tous les bateaux sont déjà placés.")
         return
 
+    #essayer de placer le bateau (logique du jeu)
+    placement_reussi = jeu.placer_bateau(
+        jeu.joueur_actuel, nom_bateau, ligne, colonne, horizontal
+    )
 
-    # colorier les cases du bateau
-    ok = jeu.placer_bateau(jeu.grille_joueur1, ligne, colonne, taille, horizontal)
-    if ok:
-        if horizontal:
-            for i in range(taille):
-                fn.refresh_grille(boutons, jeu.grille_joueur1, theme_actuel)
+    if not placement_reussi:
+        messagebox.showwarning(
+            "Placement impossible",
+            "Le bateau ne peut pas être placé ici."
+        )
+        return
 
+    #affichage du bateau sur la grille 
+    jeu.COULEUR_BATEAU = "#4CAF50" #couleur bateau placé
+    for i in range(taille):
+        l = ligne + (0 if horizontal else i)
+        c = colonne + (i if horizontal else 0)
+        boutons[l][c].config(bg=jeu.COULEUR_BATEAU)
 
+    # mettre à jour la grille visuellement
+    refresh_grille(boutons, jeu.grille_joueur(jeu.joueur_actuel), theme_actuel)
+
+    #vérifier si tous les bateaux sont placés
+    if not bateaux_restants:
+        if jeu.joueur_actuel == 1:
+            jeu.joueur_actuel = 2
+            jeu.bateaux_restants = jeu.LISTE_BATEAUX.copy()
+            vider_grille(boutons)
+
+            messagebox.showinfo(
+                "Joueur 2",
+                "Joueur 2 : place tes bateaux"
+            )
         else:
-            for i in range(taille):
-                boutons[ligne+i][colonne].configure(bg="white")
-        jeu.indice_bateau += 1 # passer au bateau suivant
-        
-        if jeu.indice_bateau < len(jeu.liste_bateaux):
-            showinfo("Placement suivant",
-                     f"Place le bateau de taille {jeu.liste_bateaux[jeu.indice_bateau]}") # message pr prochain bateau
-        else:
-            showinfo("Placement terminé", "Tous les bateaux sont placés !")
-    else:
-        showinfo("Placement impossible", "Impossible à cet endroit.")
+            demarrer_phase_tir()
+
+
+
+# vider la grille des boutons
+def vider_grille(boutons):
+    for ligne in boutons:
+        for bouton in ligne:
+            bouton.config(bg=COULEUR_FOND)
 
 
 #petite fenêtre pour demander quel bateau et orientation, c plus clair
 
 def demander_bateau_et_orientation():
-    
+    if not jeu.bateaux_restants:
+        return None, None  # plus de bateaux à placer
+
     # création d’une fenêtre
     win = tk.Toplevel()
     win.title("Choisir bateau & orientation")
 
     # liste de bateaux disponibles (clés de BATEAUX_PRESET)
-    noms_bateaux = list(jeu.BATEAUX_PRESET.keys())
+    noms_bateaux = jeu.bateaux_restants
+
 
     # variable pour le spinbox
     var_bateau = tk.StringVar(win)

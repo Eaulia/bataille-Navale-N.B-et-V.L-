@@ -18,6 +18,15 @@ BATEAUX_PRESET = {
     "sous_marin_2": 3,
     "torpilleur": 2
 }
+#juste pour tester
+grille_joueur1 = [[0]*10 for _ in range(10)]
+grille_joueur2 = [[0]*10 for _ in range(10)]
+
+# 0 = vide, 1 = bateau
+grille_joueur1[2][3] = 1
+grille_joueur1[2][4] = 1
+grille_joueur1[2][5] = 1
+
 
 
 #déterminer qui a gagné

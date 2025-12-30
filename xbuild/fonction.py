@@ -114,8 +114,11 @@ def appliquer_theme(theme, root, frames, boutons):
 
 
 
-#pour tester le clic sur une case du grillage
+# savoir s'il y a un bateau à cette position
 def clic_case(ligne, colonne):
-    print(ligne, colonne)
+    if grille_adverse[ligne][colonne] == BATEAU:
+        boutons[ligne][colonne].configure(bg="red")   # si touché
+    else:
+        boutons[ligne][colonne].configure(bg="black") # ou raté
 
 

@@ -1,5 +1,12 @@
 import tkinter as tk
 import fonction as fn
+from tkinter.messagebox import showinfo
+
+def start_pvp():
+    fn.swap_frames(f4, f2)
+    # Affiche l’alerte pour demander aux joueurs de placer leurs bateaux
+    showinfo("Placement des bateaux", "Joueur 1 : place tes bateaux en cliquant sur les cases.")
+
 
 
 # différents thèmes de couleurs
@@ -102,7 +109,8 @@ fn.bouton(
 fn.bouton(
     f4, [" ", "Contre un autre joueur", " "],
     200, 50, 16, 2, "bold", 0.5,
-    command=lambda: fn.swap_frames(f4, f2)
+    command=lambda: start_pvp()
+
 )
 tk.Button(f4, text='Retour', command=lambda: fn.swap_frames(f4, f1)).pack(pady=5)
 
@@ -129,6 +137,7 @@ for i in range(10):
     panel2.grid_columnconfigure(i, weight=1, uniform="equal")
     panel2.grid_rowconfigure(i, weight=1, uniform="equal")
 
+
 # Afficher une grille de boutons 10x10 dans panel2
 boutons = []
 
@@ -145,6 +154,12 @@ for i in range(10):
         b.grid(row=i, column=j, sticky="nsew")
         ligne.append(b)
     boutons.append(ligne)
+
+# Essaie pour afficher un bateau horizontal de 3 cases
+bateau = [(2, 3), (2, 4), (2, 5)]
+for (l, c) in bateau:
+    boutons[l][c].configure(bg="red")
+
 
 tk.Button(f2, text='Retour', command=lambda: fn.swap_frames(f2, f4)).pack(pady=5)
 

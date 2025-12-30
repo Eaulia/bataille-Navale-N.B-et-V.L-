@@ -1,3 +1,5 @@
+from random import*
+
 # nouveau dossier après avoir fini l'interface etc, je commence vraiment le jeu
 # ici on gère les éléments de jeu
 # (les grilles, les bateaux, les tirs, les tours et la victoire)
@@ -67,6 +69,33 @@ def peut_placer(grille, ligne, col, taille, horizontal=True):
             if grille[ligne + i][col] == BATEAU:
                 return False
     return True
+
+
+# placement aléatoire des bateaux pour un joueur
+def placement_aleatoire(joueur):
+    global bateaux_restants
+    bateaux_restants = LISTE_BATEAUX.copy()
+
+    # vider la grille
+    grille = grille_joueur(joueur)
+    for i in range(10):
+        for j in range(10):
+            grille[i][j] = VIDE
+
+    import random
+    for bateau in LISTE_BATEAUX:
+        taille = taille_bateau(bateau)
+        place_ok = False
+        while not place_ok: #eviter les chevauchements
+            horizontal = random.choice([True, False])
+            ligne = random.randint(0, 9)
+            col = random.randint(0, 9)
+            place_ok = peut_placer(grille, ligne, col, taille, horizontal)
+            if place_ok:
+                placer_bateau(joueur, bateau, ligne, col, horizontal)
+
+
+
 
 # placer un bateau sur la grille du joueur si possible
 def placer_bateau(joueur, nom_bateau, ligne, col, horizontal):

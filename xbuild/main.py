@@ -1,6 +1,8 @@
 import tkinter as tk
 import fonction as fn
 from tkinter.messagebox import showinfo
+import fonction
+import jeu
 
 def start_pvp():
     fn.swap_frames(f4, f2)
@@ -156,6 +158,15 @@ for i in range(10):
         b.grid(row=i, column=j, sticky="nsew")
         ligne.append(b)
     boutons.append(ligne)
+
+# Bouton pour placement aléatoire
+btn_aleatoire = tk.Button(
+    f2,  # le frame pour le placement
+    text="Placement aléatoire",
+    command=lambda: fonction.placement_aleatoire_interface(boutons, theme_actuel) 
+)
+btn_aleatoire.pack(pady=10)  #ajouter un peu d'espace autour du bouton
+
 
 tk.Button(f2, text='Retour', command=lambda: fn.swap_frames(f2, f4)).pack(pady=5)
 

@@ -15,7 +15,6 @@ def swap_frames(hide, show):
     show.pack(fill='both', expand=True)
 
 
-
 # BOUTON PERSONNALISÉ 
 def bouton(parent, text_lines, wid, hei, size1, size2, boldd, relly, command=None):
     """
@@ -58,8 +57,6 @@ def bouton(parent, text_lines, wid, hei, size1, size2, boldd, relly, command=Non
     return btn
 
 
-
-
 # BARRE DE MENU
 def create_menu(fenetre):
 
@@ -82,7 +79,6 @@ def create_menu(fenetre):
     menubar.add_cascade(label="Help", menu=menu1)
 
     fenetre.config(menu=menubar)
-
 
 
 # PANNEAUX
@@ -108,7 +104,7 @@ def appliquer_theme(theme, root, frames, boutons):
             elif isinstance(widget, tk.Frame):
                 widget.configure(bg=theme["button"])
 
-            # pourrecolorer  à l'intérieur des boutons
+            # pour recolorer  à l'intérieur des boutons
                 for sub in widget.winfo_children():
                     if isinstance(sub, tk.Label):
                         sub.configure(
@@ -129,6 +125,19 @@ def refresh_grille(boutons, grille, theme):
             else:
                 boutons[i][j].configure(bg=theme["grid"])
                 
+
+# placement aléatoire des bateaux 
+def placement_aleatoire_interface(boutons, theme_actuel):
+    jeu.placement_aleatoire(jeu.joueur_actuel)
+    refresh_grille(boutons, jeu.grille_joueur(jeu.joueur_actuel), theme_actuel) #mettre à jour l'affichage de la grille
+    if jeu.joueur_actuel == 1:
+         jeu.joueur_actuel = 2
+         jeu.bateaux_restants = jeu.LISTE_BATEAUX.copy()
+         vider_grille(boutons)
+         messagebox.showinfo("Joueur 2", "Joueur 2 : place tes bateaux")
+    else:
+         demarrer_phase_tir()
+
 
 # demander quel bateau et orientation
 def clic_placement_bateau(ligne, colonne, boutons):
@@ -167,7 +176,7 @@ def clic_placement_bateau(ligne, colonne, boutons):
     refresh_grille(boutons, jeu.grille_joueur(jeu.joueur_actuel), theme_actuel)
 
     #vérifier si tous les bateaux sont placés
-    if not bateaux_restants:
+    if not jeu.bateaux_restants:
         if jeu.joueur_actuel == 1:
             jeu.joueur_actuel = 2
             jeu.bateaux_restants = jeu.LISTE_BATEAUX.copy()
@@ -179,7 +188,6 @@ def clic_placement_bateau(ligne, colonne, boutons):
             )
         else:
             demarrer_phase_tir()
-
 
 
 # vider la grille des boutons
@@ -201,7 +209,6 @@ def demander_bateau_et_orientation():
 
     # liste de bateaux disponibles (clés de BATEAUX_PRESET)
     noms_bateaux = jeu.bateaux_restants
-
 
     # variable pour le spinbox
     var_bateau = tk.StringVar(win)

@@ -157,12 +157,6 @@ for i in range(10):
         ligne.append(b)
     boutons.append(ligne)
 
-# Essaie pour afficher un bateau horizontal de 3 cases
-bateau = [(2, 3), (2, 4), (2, 5)]
-for (l, c) in bateau:
-    boutons[l][c].configure(bg="red")
-
-
 tk.Button(f2, text='Retour', command=lambda: fn.swap_frames(f2, f4)).pack(pady=5)
 
 
@@ -195,7 +189,7 @@ for i in range(10):
             width=2,
             height=2,
             bg=theme_actuel["grid"],
-            command=lambda l=i, c=j: fn.clic_case(l, c)
+            command=lambda l=i, c=j: fn.clic_placement_bateau(l, c, boutons)
         )
         b.grid(row=i, column=j, sticky="nsew")
         ligne.append(b)

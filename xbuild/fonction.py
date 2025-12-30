@@ -1,6 +1,9 @@
 import tkinter as tk
 from tkinter.messagebox import showinfo
+from tkinter.simpledialog import askstring
+import jeu
 
+#askstring c pour dmd qlq chose, ici l'orientation du bateau
 
 def swap_frames(hide, show):
     """Echanger un frame en arrière-plan et un frame au premier plan.
@@ -55,6 +58,7 @@ def bouton(parent, text_lines, wid, hei, size1, size2, boldd, relly, command=Non
 
 
 
+
 # BARRE DE MENU
 def create_menu(fenetre):
 
@@ -87,7 +91,6 @@ def panel(p, wid, hei, theme, content):
     tk.Label(panel, text=content, bg=theme["frame"], fg=theme["text"]).pack(expand=True)
     return panel
 
-
 def appliquer_theme(theme, root, frames, boutons):
     # pour la fenêtre
     root.configure(bg=theme["bg"])
@@ -114,10 +117,36 @@ def appliquer_theme(theme, root, frames, boutons):
 
 
 
-import jeu
-#quand on clique dans la grille pour placer un bateau de joueur 1
-def clic_placement_j1(ligne, colonne, boutons):
-    if jeu.placer_bateau_j1(ligne, colonne): # si vrai, colorie en rouge
-        boutons[ligne][colonne].configure(bg="red")
+
+
+#quand on clique dans la grille pour placer le bateau d'un joueur
+def clic_placement_bateau(ligne, colonne, boutons):
+    taille = jeu.bateau_en_cours_taille()
+    if taille is None:
+        print("Tous les bateaux sont déjà placés.")
+        return # on vérifie si tous les bateaux sont pas déjà placés
+
+    # demande orientation
+    ori = askstring("Orientation", "Entrer H pour horizontal ou V pour vertical")
+    if ori is None:
+        return  # pr annuler
+    horizontal = (ori.lower() == 'h')
+
+    # colorier les cases du bateau
+    ok = jeu.placer_bateau(jeu.grille_joueur1, ligne, colonne, taille, horizontal)
+    if ok:
+        if horizontal:
+            for i in range(taille):
+                boutons[ligne][colonne+i].configure(bg="red")
+        else:
+            for i in range(taille):
+                boutons[ligne+i][colonne].configure(bg="red")
+        jeu.indice_bateau += 1 # passer au bateau suivant
+        
+        if jeu.indice_bateau < len(jeu.liste_bateaux):
+            showinfo("Placement suivant",
+                     f"Place le bateau de taille {jeu.liste_bateaux[jeu.indice_bateau]}") # message pr prochain bateau
+        else:
+            showinfo("Placement terminé", "Tous les bateaux sont placés !")
     else:
-        print("Case déjà occupée!")
+        showinfo("Placement impossible", "Impossible à cet endroit.")

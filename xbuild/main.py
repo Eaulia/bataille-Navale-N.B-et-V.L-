@@ -141,7 +141,7 @@ for i in range(10):
 
 
 # Afficher une grille de boutons 10x10 dans panel2
-boutons = []
+boutons_pvp = [] 
 
 for i in range(10):
     ligne = []
@@ -151,20 +151,21 @@ for i in range(10):
             width=2,
             height=2,
             bg=theme_actuel["grid"],
-            command=lambda l=i, c=j: fn.clic_placement_bateau(l, c, boutons)
+            command=lambda l=i, c=j: fn.clic_placement_bateau(l, c, boutons_pvp, theme_actuel)
 
 
         )
         b.grid(row=i, column=j, sticky="nsew")
         ligne.append(b)
-    boutons.append(ligne)
+    boutons_pvp.append(ligne)
 
 # Bouton pour placement aléatoire
 btn_aleatoire = tk.Button(
     f2,  # le frame pour le placement
     text="Placement aléatoire",
-    command=lambda: fonction.placement_aleatoire_interface(boutons, theme_actuel) 
+    command=lambda: fonction.placement_aleatoire_interface(boutons_pvp, theme_actuel) 
 )
+
 btn_aleatoire.pack(pady=10)  #ajouter un peu d'espace autour du bouton
 
 
@@ -200,12 +201,22 @@ for i in range(10):
             width=2,
             height=2,
             bg=theme_actuel["grid"],
-            command=lambda l=i, c=j: fn.clic_placement_bateau(l, c, boutons_ia)
+            command=lambda l=i, c=j: fn.clic_placement_bateau(l, c, boutons_ia, theme_actuel)
 
         )
         b.grid(row=i, column=j, sticky="nsew")
         ligne.append(b)
     boutons_ia.append(ligne)
+
+# Bouton pour placement aléatoire
+btn_aleatoire = tk.Button(
+    f5,  # le frame pour le placement
+    text="Placement aléatoire",
+    command=lambda: fonction.placement_aleatoire_interface(boutons_ia, theme_actuel) 
+)
+
+btn_aleatoire.pack(pady=10)  #ajouter un peu d'espace autour du bouton
+
 
 tk.Button(f5, text='Retour', command=lambda: fn.swap_frames(f5, f4)).pack(pady=5)
 
@@ -213,9 +224,6 @@ p.add(panel1)
 p.add(panel2)
 
 import jeu
-
-def place_bateau(ligne, colonne, bouton):
-    jeu.clic_case(ligne, colonne, boutons)
 
 root.mainloop()
 

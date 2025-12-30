@@ -5,6 +5,8 @@ import jeu
 from tkinter import messagebox
 
 #askstring c pour dmd qlq chose, ici l'orientation du bateau
+COULEUR_FOND = "#FFFFFF"  # couleur par défaut des cases vides
+
 
 def swap_frames(hide, show):
     """Echanger un frame en arrière-plan et un frame au premier plan.
@@ -132,15 +134,15 @@ def placement_aleatoire_interface(boutons, theme_actuel):
     refresh_grille(boutons, jeu.grille_joueur(jeu.joueur_actuel), theme_actuel) #mettre à jour l'affichage de la grille
     if jeu.joueur_actuel == 1:
          jeu.joueur_actuel = 2
-         jeu.bateaux_restants = jeu.LISTE_BATEAUX.copy()
          vider_grille(boutons)
          messagebox.showinfo("Joueur 2", "Joueur 2 : place tes bateaux")
+
     else:
          demarrer_phase_tir()
 
 
 # demander quel bateau et orientation
-def clic_placement_bateau(ligne, colonne, boutons):
+def clic_placement_bateau(ligne, colonne, boutons, theme_actuel):
 
     #demander le bateau et l'orientation
     nom_bateau, horizontal = demander_bateau_et_orientation()
@@ -175,19 +177,18 @@ def clic_placement_bateau(ligne, colonne, boutons):
     # mettre à jour la grille visuellement
     refresh_grille(boutons, jeu.grille_joueur(jeu.joueur_actuel), theme_actuel)
 
-    #vérifier si tous les bateaux sont placés
-    if not jeu.bateaux_restants:
-        if jeu.joueur_actuel == 1:
-            jeu.joueur_actuel = 2
-            jeu.bateaux_restants = jeu.LISTE_BATEAUX.copy()
-            vider_grille(boutons)
+    # si plus de bateaux à placer
+    if not jeu.bateaux_restants_joueur(jeu.joueur_actuel):
+         if jeu.joueur_actuel == 1:  # passer au joueur 2
+             jeu.joueur_actuel = 2
+             vider_grille(boutons)
+             messagebox.showinfo("Joueur 2", "Joueur 2 : place tes bateaux")
+         else:  # si Joueur 2 a fini, on peut commencer la phase de tir
+             demarrer_phase_tir()
 
-            messagebox.showinfo(
-                "Joueur 2",
-                "Joueur 2 : place tes bateaux"
-            )
-        else:
-            demarrer_phase_tir()
+# démarrer la phase de tir
+def demarrer_phase_tir():
+    messagebox.showinfo("Phase de tir", "Tous les bateaux sont placés ! Début de la bataille.")
 
 
 # vider la grille des boutons
@@ -200,15 +201,15 @@ def vider_grille(boutons):
 #petite fenêtre pour demander quel bateau et orientation, c plus clair
 
 def demander_bateau_et_orientation():
-    if not jeu.bateaux_restants:
+    # utiliser la liste des bateaux du joueur actuel
+    noms_bateaux = jeu.bateaux_restants_joueur(jeu.joueur_actuel)
+    
+    if not noms_bateaux:
         return None, None  # plus de bateaux à placer
 
     # création d’une fenêtre
     win = tk.Toplevel()
     win.title("Choisir bateau & orientation")
-
-    # liste de bateaux disponibles (clés de BATEAUX_PRESET)
-    noms_bateaux = jeu.bateaux_restants
 
     # variable pour le spinbox
     var_bateau = tk.StringVar(win)
@@ -246,3 +247,4 @@ def demander_bateau_et_orientation():
     win.wait_window()
 
     return result["bateau"], result["horiz"]
+

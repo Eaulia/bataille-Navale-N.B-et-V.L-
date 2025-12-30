@@ -26,8 +26,10 @@ TAILLES_BATEAUX = {
 # liste complète des bateaux 
 LISTE_BATEAUX = list(TAILLES_BATEAUX.keys())
 
-# liste des bateaux qu'il reste à placer
-bateaux_restants = LISTE_BATEAUX.copy()
+# listes des bateaux à placer pour chaque joueur
+bateaux_restants_j1 = LISTE_BATEAUX.copy()
+bateaux_restants_j2 = LISTE_BATEAUX.copy()
+
 
 # couleur utilisée par l'interface pour afficher un bateau
 COULEUR_BATEAU = "#4CAF50"  
@@ -73,8 +75,6 @@ def peut_placer(grille, ligne, col, taille, horizontal=True):
 
 # placement aléatoire des bateaux pour un joueur
 def placement_aleatoire(joueur):
-    global bateaux_restants
-    bateaux_restants = LISTE_BATEAUX.copy()
 
     # vider la grille
     grille = grille_joueur(joueur)
@@ -99,10 +99,9 @@ def placement_aleatoire(joueur):
 
 # placer un bateau sur la grille du joueur si possible
 def placer_bateau(joueur, nom_bateau, ligne, col, horizontal):
-    global bateaux_restants
 
-    if nom_bateau not in bateaux_restants:
-        return False  # bateau déjà placé
+    if nom_bateau not in bateaux_restants_joueur(joueur):
+             return False
 
     taille = taille_bateau(nom_bateau)
     if taille is None:
@@ -122,7 +121,7 @@ def placer_bateau(joueur, nom_bateau, ligne, col, horizontal):
             grille[ligne + i][col] = BATEAU
 
     # on enlève le bateau de la liste
-    bateaux_restants.remove(nom_bateau)
+    retirer_bateau(joueur, nom_bateau)
     return True
 
 # réinitialiser la liste des bateaux à placer
@@ -137,3 +136,16 @@ def a_perdu(grille):
         if BATEAU in ligne:
             return False
     return True
+
+# obtenir la liste des bateaux restants pour un joueur 
+def bateaux_restants_joueur(joueur):
+    return bateaux_restants_j1 if joueur == 1 else bateaux_restants_j2
+
+# retirer un bateau de la liste des bateaux restants
+def retirer_bateau(joueur, nom_bateau):
+    if joueur == 1:
+        bateaux_restants_j1.remove(nom_bateau)
+    else:
+        bateaux_restants_j2.remove(nom_bateau)
+
+

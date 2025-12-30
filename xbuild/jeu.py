@@ -9,7 +9,6 @@ def changer_tour():
     joueur_actuel = 2 if joueur_actuel == 1 else 1
 
 
-
 # les bateaux 
 BATEAUX_PRESET = {
     "porte_avions": 5,
@@ -18,15 +17,18 @@ BATEAUX_PRESET = {
     "sous_marin_2": 3,
     "torpilleur": 2
 }
-#juste pour tester
-grille_joueur1 = [[0]*10 for _ in range(10)]
-grille_joueur2 = [[0]*10 for _ in range(10)]
 
-# 0 = vide, 1 = bateau
-grille_joueur1[2][3] = 1
-grille_joueur1[2][4] = 1
-grille_joueur1[2][5] = 1
 
+grille_joueur1 = [[0]*10 for _ in range(10)]  # grille vide pour le joueur 1
+
+
+
+# pour placer bateau dans la grille
+def placer_bateau_j1(ligne, colonne) :
+    if grille_joueur1[ligne][colonne] == 0:
+        grille_joueur1[ligne][colonne] = 1
+        return True #case vide donc on peut placer le bateau
+    return False #case déjà occupée
 
 
 #déterminer qui a gagné

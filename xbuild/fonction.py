@@ -114,11 +114,10 @@ def appliquer_theme(theme, root, frames, boutons):
 
 
 
-# savoir s'il y a un bateau à cette position
-def clic_case(ligne, colonne):
-    if grille_adverse[ligne][colonne] == BATEAU:
-        boutons[ligne][colonne].configure(bg="red")   # si touché
+import jeu
+#quand on clique dans la grille pour placer un bateau de joueur 1
+def clic_placement_j1(ligne, colonne, boutons):
+    if jeu.placer_bateau_j1(ligne, colonne): # si vrai, colorie en rouge
+        boutons[ligne][colonne].configure(bg="red")
     else:
-        boutons[ligne][colonne].configure(bg="black") # ou raté
-
-
+        print("Case déjà occupée!")

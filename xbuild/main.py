@@ -37,7 +37,7 @@ f5 = tk.Frame(root)
 # afficher le premier frame
 f1.pack(fill='both', expand=True)
 
-# liste de tous les frames (IMPORTANT pour les thèmes)
+# liste de tous les frames (important pour les thèmes)
 frames = [f1, f2, f3, f4, f5]
 
 # MENU
@@ -149,7 +149,9 @@ for i in range(10):
             width=2,
             height=2,
             bg=theme_actuel["grid"],
-            command=lambda l=i, c=j: fn.clic_case(l, c)
+            command=lambda l=i, c=j: fn.clic_placement_j1(l, c, boutons)
+
+
         )
         b.grid(row=i, column=j, sticky="nsew")
         ligne.append(b)
@@ -205,3 +207,8 @@ p.add(panel1)
 p.add(panel2)
 
 root.mainloop()
+
+import jeu
+
+def place_bateau(ligne, colonne, bouton):
+    jeu.clic_case(ligne, colonne, boutons)

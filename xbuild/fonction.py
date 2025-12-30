@@ -112,35 +112,52 @@ def appliquer_theme(theme, root, frames, boutons):
                     if isinstance(sub, tk.Label):
                         sub.configure(
                             bg=theme["button"],
-                            fg=theme["text"]
-                        )
+                            fg=theme["text"])
+
+            #et pr recolorer les boutons de la grille
+            refresh_grille(boutons, jeu.grille_joueur1, theme_actuel)
+                        
 
 
 
+#en parcourant la grille, on met à jour les couleurs des boutons en fonction de l'état de la grille
+def refresh_grille(boutons, grille, theme): 
+    for i in range(len(grille)):
+        for j in range(len(grille[i])):
+            etat = grille[i][j]
+            if etat == jeu.BATEAU:
+                boutons[i][j].configure(bg="white")
+            else:
+                boutons[i][j].configure(bg=theme["grid"])
+                
 
 
 #quand on clique dans la grille pour placer le bateau d'un joueur
 def clic_placement_bateau(ligne, colonne, boutons):
+
+    # demander quel bateau et orientation
+    nom_bateau, horizontal = demander_bateau_et_orientation()
+    if nom_bateau is None:
+        return  # annulation
+    taille = jeu.taille_bateau(nom_bateau) # obtenir la taille du bateau avc le nom
+
+
     taille = jeu.bateau_en_cours_taille()
     if taille is None:
         print("Tous les bateaux sont déjà placés.")
         return # on vérifie si tous les bateaux sont pas déjà placés
-
-    # demande orientation
-    ori = askstring("Orientation", "Entrer H pour horizontal ou V pour vertical")
-    if ori is None:
-        return  # pr annuler
-    horizontal = (ori.lower() == 'h')
 
     # colorier les cases du bateau
     ok = jeu.placer_bateau(jeu.grille_joueur1, ligne, colonne, taille, horizontal)
     if ok:
         if horizontal:
             for i in range(taille):
-                boutons[ligne][colonne+i].configure(bg="red")
+                fn.refresh_grille(boutons, jeu.grille_joueur1, theme_actuel)
+
+
         else:
             for i in range(taille):
-                boutons[ligne+i][colonne].configure(bg="red")
+                boutons[ligne+i][colonne].configure(bg="white")
         jeu.indice_bateau += 1 # passer au bateau suivant
         
         if jeu.indice_bateau < len(jeu.liste_bateaux):
@@ -150,3 +167,52 @@ def clic_placement_bateau(ligne, colonne, boutons):
             showinfo("Placement terminé", "Tous les bateaux sont placés !")
     else:
         showinfo("Placement impossible", "Impossible à cet endroit.")
+
+
+#petite fenêtre pour demander quel bateau et orientation, c plus clair
+
+def demander_bateau_et_orientation():
+    
+    # création d’une fenêtre
+    win = tk.Toplevel()
+    win.title("Choisir bateau & orientation")
+
+    # liste de bateaux disponibles (clés de BATEAUX_PRESET)
+    noms_bateaux = list(jeu.BATEAUX_PRESET.keys())
+
+    # variable pour le spinbox
+    var_bateau = tk.StringVar(win)
+    var_bateau.set(noms_bateaux[0])  # valeur initiale
+
+    # variable orientation
+    var_orient = tk.StringVar(win)
+    var_orient.set("H")  # par défaut
+
+    # spinbox pour choisir le bateau
+    tk.Label(win, text="Choisir bateau :").pack(padx=10, pady=5)
+    spin = tk.Spinbox(win, values=noms_bateaux, textvariable=var_bateau)
+    spin.pack(padx=10, pady=5)
+
+    # boutons pour choisir orientation
+    frame_or = tk.Frame(win)
+    tk.Label(frame_or, text="Orientation :").pack(side="left")
+    tk.Radiobutton(frame_or, text="Horizontal", variable=var_orient, value="H").pack(side="left")
+    tk.Radiobutton(frame_or, text="Vertical", variable=var_orient, value="V").pack(side="left")
+    frame_or.pack(padx=10, pady=5)
+
+    # valeur de retour
+    result = {"bateau": None, "horiz": None}
+
+    def valider():
+        result["bateau"] = var_bateau.get()
+        result["horiz"] = (var_orient.get() == "H")
+        win.destroy()
+
+    # bouton OK
+    tk.Button(win, text="OK", command=valider).pack(pady=10)
+
+    # attendre que la fenêtre soit fermée
+    win.grab_set()
+    win.wait_window()
+
+    return result["bateau"], result["horiz"]

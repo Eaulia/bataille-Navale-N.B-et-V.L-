@@ -149,7 +149,7 @@ for i in range(10):
             width=2,
             height=2,
             bg=theme_actuel["grid"],
-            command=lambda l=i, c=j: fn.clic_placement_j1(l, c, boutons)
+            command=lambda l=i, c=j: fn.clic_placement_bateau(l, c, boutons)
 
 
         )

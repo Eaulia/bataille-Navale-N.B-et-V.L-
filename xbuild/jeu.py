@@ -18,16 +18,20 @@ BATEAUX_PRESET = {
     "torpilleur": 2
 }
 
+#constantes
+VIDE = 0
+BATEAU = 1
+TOUCHE = 2
+RATE = 3
 
+#grilles  vides pour les deux joueurs
 grille_joueur1 = [[0]*10 for _ in range(10)]  # grille vide pour le joueur 1
 grille_joueur2 = [[0]*10 for _ in range(10)] # grille vide pour le joueur 2
 
 #là les fonctions sont chiantes mais c'est juste pour pas qu'on puisse placer plus de bateaux que prévu
 
-# pour placement selon le preset
-placement_en_cours = True
-liste_bateaux = list(BATEAUX_PRESET.values())  # valeurs des bateaux à placer
-indice_bateau = 0  # quel bateau on place maintenant
+def taille_bateau(nom): #renvoie la taille du bateau en fonction de son nom
+    return BATEAUX_PRESET.get(nom, None)
 
 # renvoie taille du bateau qu'on place actuellement
 def bateau_en_cours_taille():
@@ -41,13 +45,13 @@ def peut_placer(grille, ligne, col, taille, horizontal=True):
         if col + taille > 10:
             return False
         for i in range(taille):
-            if grille[ligne][col+i] == 1:
+            if grille[ligne][col+i] == BATEAU:
                 return False
     else:
         if ligne + taille > 10:
             return False
         for i in range(taille):
-            if grille[ligne+i][col] == 1:
+            if grille[ligne+i][col] == BATEAU:
                 return False
     return True
 
@@ -58,10 +62,10 @@ def placer_bateau(grille, ligne, col, taille, horizontal):
 
     if horizontal:
         for i in range(taille):
-            grille[ligne][col+i] = 1
+            grille[ligne][col+i] = BATEAU
     else:
         for i in range(taille):
-            grille[ligne+i][col] = 1
+            grille[ligne+i][col] = BATEAU
     return True
 
 
@@ -69,7 +73,7 @@ def placer_bateau(grille, ligne, col, taille, horizontal):
 # pour placer bateau dans la grille
 def placer_bateau_j1(ligne, colonne) :
     if grille_joueur1[ligne][colonne] == 0:
-        grille_joueur1[ligne][colonne] = 1
+        grille_joueur1[ligne][colonne] = BATEAU
         return True #case vide donc on peut placer le bateau
     return False #case déjà occupée
 

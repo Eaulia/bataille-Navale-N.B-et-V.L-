@@ -90,7 +90,7 @@ def panel(p, wid, hei, theme, content):
     tk.Label(panel, text=content, bg=theme["frame"], fg=theme["text"]).pack(expand=True)
     return panel
 
-def appliquer_theme(theme, root, frames, boutons):
+def appliquer_theme(theme, root, frames, boutons_pvp, boutons_ia):
     # pour la fenêtre
     root.configure(bg=theme["bg"])
 
@@ -113,8 +113,10 @@ def appliquer_theme(theme, root, frames, boutons):
                             bg=theme["button"],
                             fg=theme["text"])
 
-    #et pr recolorer les boutons de la grille
-    refresh_grille(boutons, jeu.grille_joueur(jeu.joueur_actuel), theme)
+    # rafraîchir les grilles
+    refresh_grille(boutons_pvp, jeu.grille_joueur(1), theme)
+    refresh_grille(boutons_ia, jeu.grille_joueur(2), theme)
+
 
 
 #en parcourant la grille, on met à jour les couleurs des boutons en fonction de l'état de la grille
@@ -131,14 +133,15 @@ def refresh_grille(boutons, grille, theme):
 # placement aléatoire des bateaux 
 def placement_aleatoire_interface(boutons, theme_actuel):
     jeu.placement_aleatoire(jeu.joueur_actuel)
-    refresh_grille(boutons, jeu.grille_joueur(jeu.joueur_actuel), theme_actuel) #mettre à jour l'affichage de la grille
+    refresh_grille(boutons, jeu.grille_joueur(jeu.joueur_actuel), theme_actuel) #mettre à jour
     if jeu.joueur_actuel == 1:
-         jeu.joueur_actuel = 2
-         vider_grille(boutons)
-         messagebox.showinfo("Joueur 2", "Joueur 2 : place tes bateaux")
-
+        jeu.changer_tour()  #passer au joueur 2
+        vider_grille(boutons, theme_actuel)
+        messagebox.showinfo("Joueur 2", "Joueur 2 : place tes bateaux")
     else:
-         demarrer_phase_tir()
+        # sinon, les deux joueurs ont placé leurs bateaux
+        demarrer_phase_tir()
+
 
 
 # demander quel bateau et orientation
@@ -168,11 +171,10 @@ def clic_placement_bateau(ligne, colonne, boutons, theme_actuel):
         return
 
     #affichage du bateau sur la grille 
-    jeu.COULEUR_BATEAU = "#4CAF50" #couleur bateau placé
     for i in range(taille):
         l = ligne + (0 if horizontal else i)
         c = colonne + (i if horizontal else 0)
-        boutons[l][c].config(bg=jeu.COULEUR_BATEAU)
+        boutons[l][c].config(bg=theme_actuel["boat"])
 
     # mettre à jour la grille visuellement
     refresh_grille(boutons, jeu.grille_joueur(jeu.joueur_actuel), theme_actuel)
@@ -192,11 +194,10 @@ def demarrer_phase_tir():
 
 
 # vider la grille des boutons
-def vider_grille(boutons):
+def vider_grille(boutons, theme_actuel):
     for ligne in boutons:
         for bouton in ligne:
-            bouton.config(bg=COULEUR_FOND)
-
+            bouton.config(bg=theme["grid"])
 
 #petite fenêtre pour demander quel bateau et orientation, c plus clair
 

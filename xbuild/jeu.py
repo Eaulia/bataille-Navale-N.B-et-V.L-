@@ -31,10 +31,6 @@ bateaux_restants_j1 = LISTE_BATEAUX.copy()
 bateaux_restants_j2 = LISTE_BATEAUX.copy()
 
 
-# couleur utilisée par l'interface pour afficher un bateau
-COULEUR_BATEAU = "#4CAF50"  
-
-
 # constantes pour les états des cases de la grille
 VIDE = 0
 BATEAU = 1
@@ -149,3 +145,14 @@ def retirer_bateau(joueur, nom_bateau):
         bateaux_restants_j2.remove(nom_bateau)
 
 
+#reinitialiser les grilles 
+def reset_jeu():
+    global bateaux_restants_j1, bateaux_restants_j2, joueur_actuel
+    bateaux_restants_j1 = LISTE_BATEAUX.copy()
+    bateaux_restants_j2 = LISTE_BATEAUX.copy()
+    joueur_actuel = 1
+
+    for i in range(10):
+     for j in range(10):
+        grille_joueur1[i][j] = VIDE
+        grille_joueur2[i][j] = VIDE

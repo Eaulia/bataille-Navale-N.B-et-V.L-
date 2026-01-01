@@ -36,6 +36,7 @@ VIDE = 0
 BATEAU = 1
 TOUCHE = 2
 RATE = 3
+COULE = 4
 
 
 # grilles vides pour les deux joueurs
@@ -129,13 +130,6 @@ def placer_bateau(joueur, nom_bateau, ligne, col, horizontal):
     return True
 
 
-# determiner si un joueur a perdu (plus de bateaux)
-def a_perdu(grille):
-    for ligne in grille:
-        if BATEAU in ligne:
-            return False
-    return True
-
 # obtenir la liste des bateaux restants pour un joueur 
 def bateaux_restants_joueur(joueur):
     return bateaux_restants_j1 if joueur == 1 else bateaux_restants_j2
@@ -159,3 +153,21 @@ def reset_jeu():
      for j in range(10):
         grille_joueur1[i][j] = VIDE
         grille_joueur2[i][j] = VIDE
+
+# fonction pr un bateau coulé
+def bateau_coule(joueur, ligne, colonne):
+    bateau = trouver_bateau(joueur, ligne, colonne)  # retourne liste de coordonnées du bateau
+    return all(grilles[joueur][l][c] == TOUCHE for l, c in bateau)
+
+
+#pour les coordonnées d'un bateau
+def coord_bateau(joueur, ligne, colonne):
+    return trouver_bateau(joueur, ligne, colonne)
+
+#donner la v ictoire si tous les bateaux sont coulés
+def verifier_victoire(joueur):
+    for ligne in grilles[joueur]:
+        for case in ligne:
+            if case == BATEAU:
+                return False
+    return True

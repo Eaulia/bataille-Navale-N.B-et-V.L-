@@ -19,6 +19,7 @@ f2 = tk.Frame(root)  # Mode PvP
 f3 = tk.Frame(root)  # Paramètres
 f4 = tk.Frame(root)  # Sélection du mode de jeu
 f5 = tk.Frame(root)  # Mode contre IA
+f6 = tk.Frame(root)  # Phase de tir
 
 # Afficher le premier frame
 f1.pack(fill='both', expand=True)
@@ -199,6 +200,20 @@ tk.Button(
     ).pack(pady=10)
 
 tk.Button(f5, text='Retour', command=lambda: fn.swap_frames(f5, f4)).pack(pady=5)
+
+
+#=========== FRAME 6 : PHASE DE JEU ===========
+
+# Frame de la phase de tir
+f_phase_tir = tk.Frame(root, bg="white")
+
+frame_placement = f5  # Frame de placement des bateaux en mode IA
+
+# Panels et boutons dans f_phase_tir
+# Création des mini-grilles et grille de tir ici
+
+fn.initialiser_phase_tir(f_phase_tir, app.theme_actuel)
+
 
 
 # ========== LANCEMENT DE L'APPLICATION ==========

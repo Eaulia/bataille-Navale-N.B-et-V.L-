@@ -290,3 +290,32 @@ def demander_bateau_et_orientation():
 
     return result["bateau"], result["horiz"]
 
+def start_pvp(root, f4, f2): # Lance le mode Joueur contre Joueur
+
+    global joueur_en_placement
+    joueur_en_placement = 1
+
+    swap_frames(f4, f2)
+
+    root.after(
+        100,
+        lambda: messagebox.showinfo(
+            "Placement des bateaux",
+            "Joueur 1 : place tes bateaux en cliquant sur les cases."
+        )
+    )
+
+
+def start_ia(root, f4, f5): # Lance le mode Joueur contre IA
+    # on réinitialise le jeu
+    jeu.reset_jeu()
+
+    swap_frames(f4, f5)
+
+    root.after(
+        100,
+        lambda: messagebox.showinfo(
+            "Placement des bateaux",
+            "Joueur 1 : place tes bateaux en cliquant sur les cases."
+        )
+    )

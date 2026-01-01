@@ -5,12 +5,6 @@ import jeu
 import apparence as app
 
 
-def start_pvp():
-    """Lance le mode joueur contre joueur."""
-    fn.swap_frames(f4, f2)
-    root.after(100, lambda: showinfo("Placement des bateaux", "Joueur 1 : place tes bateaux en cliquant sur les cases."))
-
-
 # ========== FENÊTRE PRINCIPALE ==========
 root = tk.Tk()
 root.title('Bataille navale')
@@ -84,12 +78,12 @@ tk.Label(f4, text="Choisir le mode de jeu", font=('Arial', 14, 'bold')).pack(pad
 fn.bouton(
     f4, [" ", "Contre l'IA", " "],
     200, 50, 16, 2, "bold", 0.3,
-    command=lambda: fn.swap_frames(f4, f5)
+    command=lambda: fn.start_ia(root, f4, f5)
 )
 fn.bouton(
     f4, [" ", "Contre un autre joueur", " "],
     200, 50, 16, 2, "bold", 0.5,
-    command=lambda: start_pvp()
+    command=lambda: fn.start_pvp(root, f4, f2)
 )
 
 tk.Button(f4, text='Retour', command=lambda: fn.swap_frames(f4, f1)).pack(pady=5)

@@ -135,96 +135,133 @@ def refresh_grille(boutons, grille, theme):
 
 # placement aléatoire des bateaux 
 def placement_aleatoire_interface(boutons, theme_actuel):
+    global joueur_en_placement  # Pour mettre à jour le joueur qui place
+
     jeu.placement_aleatoire(jeu.joueur_actuel)
-    refresh_grille(boutons, jeu.grille_joueur(jeu.joueur_actuel), theme_actuel) #mettre à jour
+    refresh_grille(boutons, jeu.grille_joueur(jeu.joueur_actuel), theme_actuel)
+
     if jeu.joueur_actuel == 1:
-        jeu.changer_tour()  #passer au joueur 2
-        vider_grille(boutons, theme_actuel)
+        jeu.changer_tour()  # Passe au joueur 2
+        joueur_en_placement = jeu.joueur_actuel  # Mettre à jour le joueur en placement
+        vider_grille(boutons, theme_actuel)  # Vide la grille pour joueur 2
         messagebox.showinfo("Joueur 2", "Joueur 2 : place tes bateaux")
     else:
-        # sinon, les deux joueurs ont placé leurs bateaux
         demarrer_phase_tir()
 
 
+# placement aléatoire des bateaux pour l'IA
+def placement_aleatoire_interface_ia(boutons, theme_actuel, mini_grille_joueur):
+    joueur = 1  # joueur humain
+    
+    # Placer aléatoirement bateaux joueur humain
+    jeu.placement_aleatoire(joueur)
+    refresh_grille(boutons, jeu.grille_joueur(joueur), theme_actuel)
+    
+    # Placer aléatoirement bateaux IA
+    jeu.placement_aleatoire(2)  # IA = joueur 2
+    
+    # Mettre à jour la mini-grille du joueur humain (affichage)
+    refresh_mini_grille(mini_grille_joueur, jeu.grille_joueur(joueur), theme_actuel)
+    
+    # Démarrer la phase de tir
+    demarrer_phase_tir()
 
-# demander quel bateau et orientation
+
+# gestion du clic sur une case pour placer un bateau
 def clic_placement_bateau(ligne, colonne, boutons, theme_actuel):
+    global joueur_en_placement  # joueur qui place ses bateaux
 
-    #demander le bateau et l'orientation
-    nom_bateau, horizontal = demander_bateau_et_orientation()
+    #demander quel bateau et orientation
+    nom_bateau, horizontal = demander_bateau_et_orientation(joueur_en_placement)
     if nom_bateau is None:
         return  # annulation ou plus de bateaux
 
-    #récupérer la taille du bateau
-    taille = jeu.taille_bateau(nom_bateau)
-    if taille is None:
-        print("Tous les bateaux sont déjà placés.")
+    #vérifier que le bateau est encore disponible
+    if nom_bateau not in jeu.bateaux_restants_joueur(joueur_en_placement):
+        messagebox.showinfo("Info", "Ce bateau a déjà été placé !")
         return
 
-    #essayer de placer le bateau (logique du jeu)
+    # récupérer la taille
+    taille = jeu.taille_bateau(nom_bateau)
+    if taille is None:
+        messagebox.showwarning("Erreur", "Impossible de récupérer la taille du bateau.")
+        return
+
+    #essayer de placer le bateau
     placement_reussi = jeu.placer_bateau(
         joueur_en_placement, nom_bateau, ligne, colonne, horizontal
     )
 
     if not placement_reussi:
-        messagebox.showwarning(
-            "Placement impossible",
-            "Le bateau ne peut pas être placé ici."
-        )
+        messagebox.showwarning("Placement impossible", "Le bateau ne peut pas être placé ici.")
         return
 
-    #affichage du bateau sur la grille 
+    #afficher le bateau sur la grille
     for i in range(taille):
         l = ligne + (0 if horizontal else i)
         c = colonne + (i if horizontal else 0)
         boutons[l][c].config(bg=theme_actuel["boat"])
 
-    # mettre à jour la grille visuellement
+    #mettre à jour la grille visuellement
     refresh_grille(boutons, jeu.grille_joueur(joueur_en_placement), theme_actuel)
 
-    # si plus de bateaux à placer
+    #vérifier si le joueur a terminé tous ses bateaux
     if not jeu.bateaux_restants_joueur(joueur_en_placement):
-         if joueur_en_placement == 1:  # passer au joueur 2
-             joueur_en_placement = 2
-             vider_grille(boutons)
-             messagebox.showinfo("Joueur 2", "Joueur 2 : place tes bateaux")
-         else:  # si Joueur 2 a fini, on peut commencer la phase de tir
-             demarrer_phase_tir()
+        if joueur_en_placement == 1:
+            # passer au joueur 2
+            joueur_en_placement = 2
+            vider_grille(boutons, theme_actuel)
+            messagebox.showinfo("Joueur 2", "Joueur 2 : place tes bateaux")
+        else:
+            # tous les joueurs ont placé leurs bateaux
+            demarrer_phase_tir()
 
 
+# gestion du clic sur une case pour placer un bateau contre l'IA
+def clic_placement_bateau_ia(ligne, colonne, boutons, theme_actuel, paned, panel1, mini_grille_joueur):
 
-def clic_placement_bateau_ia(ligne, colonne, boutons, theme_actuel):
     joueur = 1  # toujours le joueur humain
 
-    nom_bateau, horizontal = demander_bateau_et_orientation()
+    # demander quel bateau et orientation
+    nom_bateau, horizontal = demander_bateau_et_orientation(joueur)
     if nom_bateau is None:
+        return  # annulation ou plus de bateaux
+
+    # vérifier que le bateau est encore disponible
+    if nom_bateau not in jeu.bateaux_restants_joueur(joueur):
+        messagebox.showinfo("Info", "Ce bateau a déjà été placé !")
         return
 
+    # récupérer la taille
     taille = jeu.taille_bateau(nom_bateau)
     if taille is None:
+        messagebox.showwarning("Erreur", "Impossible de récupérer la taille du bateau.")
         return
 
-    placement_reussi = jeu.placer_bateau(
-        joueur, nom_bateau, ligne, colonne, horizontal
-    )
-
+    #essayer de placer le bateau
+    placement_reussi = jeu.placer_bateau(joueur, nom_bateau, ligne, colonne, horizontal)
     if not placement_reussi:
-        messagebox.showwarning(
-            "Placement impossible",
-            "Le bateau ne peut pas être placé ici."
-        )
+        messagebox.showwarning("Placement impossible", "Le bateau ne peut pas être placé ici.")
         return
 
+    # ettmre à jour la grille du joueur
     refresh_grille(boutons, jeu.grille_joueur(joueur), theme_actuel)
 
-    # Si le joueur a fini de placer ses bateaux
+    # vérifier si le joueur a terminé tous ses bateaux
     if not jeu.bateaux_restants_joueur(joueur):
-        messagebox.showinfo(
-            "IA",
-            "L'IA place ses bateaux."
-        )
-        jeu.placement_aleatoire(2)
+        #placement aléatoire des bateaux de l'IA
+        jeu.placement_aleatoire(2)  # IA = joueur 2
+
+        #aouter la mini-grille si ce n’est pas fait
+        if not panel1.winfo_ismapped():
+            paned.add(panel1)
+
+        #afficher la mini-grille du joueur
+        refresh_mini_grille(mini_grille_joueur, jeu.grille_joueur(joueur), theme_actuel)
+
+        # démarrer la phase de tir
         demarrer_phase_tir()
+
 
 
 
@@ -242,9 +279,11 @@ def vider_grille(boutons, theme_actuel):
 
 #petite fenêtre pour demander quel bateau et orientation, c plus clair
 
-def demander_bateau_et_orientation():
+def demander_bateau_et_orientation(joueur):
     # utiliser la liste des bateaux du joueur actuel
-    noms_bateaux = jeu.bateaux_restants_joueur(jeu.joueur_actuel)
+    noms_bateaux = jeu.bateaux_restants_joueur(joueur)
+    if not noms_bateaux:
+        return None, None  # plus de bateaux à placer
     
     if not noms_bateaux:
         return None, None  # plus de bateaux à placer
@@ -290,10 +329,14 @@ def demander_bateau_et_orientation():
 
     return result["bateau"], result["horiz"]
 
-def start_pvp(root, f4, f2): # Lance le mode Joueur contre Joueur
 
+# démarrer le mode Joueur contre Joueur
+def start_pvp(root, f4, f2):
     global joueur_en_placement
     joueur_en_placement = 1
+
+    # Réinitialiser le jeu avant de commencer
+    jeu.reset_jeu()
 
     swap_frames(f4, f2)
 
@@ -306,7 +349,10 @@ def start_pvp(root, f4, f2): # Lance le mode Joueur contre Joueur
     )
 
 
+
 def start_ia(root, f4, f5): # Lance le mode Joueur contre IA
+    global joueur_en_placement
+    joueur_en_placement = 1
     # on réinitialise le jeu
     jeu.reset_jeu()
 
@@ -319,3 +365,12 @@ def start_ia(root, f4, f5): # Lance le mode Joueur contre IA
             "Joueur 1 : place tes bateaux en cliquant sur les cases."
         )
     )
+
+# réinitialiser la mini-grille affichant les bateaux du joueur 
+def refresh_mini_grille(mini_grille, grille, theme):
+    for i in range(10):
+        for j in range(10):
+            if grille[i][j] == jeu.BATEAU:
+                mini_grille[i][j].config(bg=theme["boat"])
+            else:
+                mini_grille[i][j].config(bg=theme["grid"])

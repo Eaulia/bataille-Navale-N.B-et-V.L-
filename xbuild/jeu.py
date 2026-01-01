@@ -78,6 +78,14 @@ def placement_aleatoire(joueur):
         for j in range(10):
             grille[i][j] = VIDE
 
+    # RESET des bateaux restants
+    if joueur == 1:
+        global bateaux_restants_j1
+        bateaux_restants_j1 = LISTE_BATEAUX.copy()
+    else:
+        global bateaux_restants_j2
+        bateaux_restants_j2 = LISTE_BATEAUX.copy()
+
     import random
     for bateau in LISTE_BATEAUX:
         taille = taille_bateau(bateau)
@@ -119,11 +127,6 @@ def placer_bateau(joueur, nom_bateau, ligne, col, horizontal):
     # on enlève le bateau de la liste
     retirer_bateau(joueur, nom_bateau)
     return True
-
-# réinitialiser la liste des bateaux à placer
-def reset_bateaux():
-    global bateaux_restants
-    bateaux_restants = LISTE_BATEAUX.copy()
 
 
 # determiner si un joueur a perdu (plus de bateaux)

@@ -1,3 +1,4 @@
+# =================== INTERFACE PRINCIPALE ===================
 import tkinter as tk
 from tkinter.messagebox import showinfo
 import fonction as fn
@@ -136,18 +137,39 @@ tk.Button(
 tk.Button(f2, text='Retour', command=lambda: fn.swap_frames(f2, f4)).pack(pady=5)
 
 
+
 # ========== FRAME 5 : MODE CONTRE IA ==========
 tk.Label(f5, text='Bienvenue dans ma Bataille Navale ;D', font=('Arial', 14, 'bold')).pack(pady=10)
 
 p = tk.PanedWindow(f5, orient=tk.HORIZONTAL, width=665, height=440)
 p.pack_propagate(False)
-p.pack(side=tk.TOP, pady=2, padx=2)
+p.pack(fill='both', expand=True, pady=2, padx=2)
+
 
 panel1 = fn.panel(p, 120, 250, app.theme_actuel, 'Boat Preset')
 panel2 = fn.panel(p, 250, 600, app.theme_actuel, 'Interface de Jeu')
 
-p.add(panel1)
+# ===== Petite grille : bateaux du joueur sur le panel1 =====
+mini_grille_joueur = []
+
+for i in range(10):
+    ligne = []
+    for j in range(10):
+        b = tk.Label(
+            panel1,
+            width=1,
+            height=1,
+            bg=app.theme_actuel["grid"],
+            relief="solid",
+            borderwidth=1
+        )
+        b.grid(row=i, column=j, padx=1, pady=1)
+        ligne.append(b)
+    mini_grille_joueur.append(ligne)
+
+# On n'ajoute pas panel1 pour l'instant, uniquement panel2
 p.add(panel2)
+
 
 # Configurer les lignes et colonnes de panel2 pour qu'elles prennent tout l'espace
 for i in range(10):
@@ -162,11 +184,8 @@ for i in range(10):
     for j in range(10):
         b = tk.Button(
             panel2,
-            width=2,
-            height=2,
             bg=app.theme_actuel["grid"],
-            command=lambda l=i, c=j: fn.clic_placement_bateau_ia(l, c, boutons_ia, app.theme_actuel)
-
+            command=lambda l=i, c=j: fn.clic_placement_bateau_ia(l, c, boutons_ia, app.theme_actuel, p, panel1, mini_grille_joueur)
         )
         b.grid(row=i, column=j, sticky="nsew")
         ligne.append(b)
@@ -176,11 +195,12 @@ for i in range(10):
 tk.Button(
     f5,
     text="Placement aléatoire",
-    command=lambda: fn.placement_aleatoire_interface(boutons_ia, app.theme_actuel)
-).pack(pady=10)
+    command=lambda: fn.placement_aleatoire_interface_ia(boutons_ia, app.theme_actuel, mini_grille_joueur)
+    ).pack(pady=10)
 
 tk.Button(f5, text='Retour', command=lambda: fn.swap_frames(f5, f4)).pack(pady=5)
 
 
 # ========== LANCEMENT DE L'APPLICATION ==========
 root.mainloop()
+

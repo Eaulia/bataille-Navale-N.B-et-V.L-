@@ -171,7 +171,8 @@ for i in range(10):
             width=2,
             height=2,
             bg=app.theme_actuel["grid"],
-            command=lambda l=i, c=j: fn.clic_placement_bateau(l, c, boutons_ia, app.theme_actuel)
+            command=lambda l=i, c=j: fn.clic_placement_bateau_ia(l, c, boutons_ia, app.theme_actuel)
+
         )
         b.grid(row=i, column=j, sticky="nsew")
         ligne.append(b)

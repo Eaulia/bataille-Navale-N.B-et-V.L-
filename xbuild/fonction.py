@@ -8,6 +8,9 @@ from tkinter import messagebox
 COULEUR_FOND = "#FFFFFF"  # couleur par défaut des cases vides
 
 
+joueur_en_placement = 1
+
+
 def swap_frames(hide, show):
     """Echanger un frame en arrière-plan et un frame au premier plan.
     .pack_forget() sert à cacher un frame
@@ -160,7 +163,7 @@ def clic_placement_bateau(ligne, colonne, boutons, theme_actuel):
 
     #essayer de placer le bateau (logique du jeu)
     placement_reussi = jeu.placer_bateau(
-        jeu.joueur_actuel, nom_bateau, ligne, colonne, horizontal
+        joueur_en_placement, nom_bateau, ligne, colonne, horizontal
     )
 
     if not placement_reussi:
@@ -177,16 +180,54 @@ def clic_placement_bateau(ligne, colonne, boutons, theme_actuel):
         boutons[l][c].config(bg=theme_actuel["boat"])
 
     # mettre à jour la grille visuellement
-    refresh_grille(boutons, jeu.grille_joueur(jeu.joueur_actuel), theme_actuel)
+    refresh_grille(boutons, jeu.grille_joueur(joueur_en_placement), theme_actuel)
 
     # si plus de bateaux à placer
-    if not jeu.bateaux_restants_joueur(jeu.joueur_actuel):
-         if jeu.joueur_actuel == 1:  # passer au joueur 2
-             jeu.joueur_actuel = 2
+    if not jeu.bateaux_restants_joueur(joueur_en_placement):
+         if joueur_en_placement == 1:  # passer au joueur 2
+             joueur_en_placement = 2
              vider_grille(boutons)
              messagebox.showinfo("Joueur 2", "Joueur 2 : place tes bateaux")
          else:  # si Joueur 2 a fini, on peut commencer la phase de tir
              demarrer_phase_tir()
+
+
+
+def clic_placement_bateau_ia(ligne, colonne, boutons, theme_actuel):
+    joueur = 1  # toujours le joueur humain
+
+    nom_bateau, horizontal = demander_bateau_et_orientation()
+    if nom_bateau is None:
+        return
+
+    taille = jeu.taille_bateau(nom_bateau)
+    if taille is None:
+        return
+
+    placement_reussi = jeu.placer_bateau(
+        joueur, nom_bateau, ligne, colonne, horizontal
+    )
+
+    if not placement_reussi:
+        messagebox.showwarning(
+            "Placement impossible",
+            "Le bateau ne peut pas être placé ici."
+        )
+        return
+
+    refresh_grille(boutons, jeu.grille_joueur(joueur), theme_actuel)
+
+    # Si le joueur a fini de placer ses bateaux
+    if not jeu.bateaux_restants_joueur(joueur):
+        messagebox.showinfo(
+            "IA",
+            "L'IA place ses bateaux."
+        )
+        jeu.placement_aleatoire(2)
+        demarrer_phase_tir()
+
+
+
 
 # démarrer la phase de tir
 def demarrer_phase_tir():
@@ -197,7 +238,7 @@ def demarrer_phase_tir():
 def vider_grille(boutons, theme_actuel):
     for ligne in boutons:
         for bouton in ligne:
-            bouton.config(bg=theme["grid"])
+            bouton.config(bg=theme_actuel["grid"])
 
 #petite fenêtre pour demander quel bateau et orientation, c plus clair
 

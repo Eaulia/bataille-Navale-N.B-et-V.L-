@@ -1,20 +1,27 @@
-from random import*
+"""
+jeu.py sert à la logique de la Bataille Navale
 
-# nouveau dossier après avoir fini l'interface etc, je commence vraiment le jeu
-# ici on gère les éléments de jeu
-# (les grilles, les bateaux, les tirs, les tours et la victoire)
+il gère :
+- Les grilles de jeu (10x10) pour chaque joueur
+- Le placement et la gestion des bateaux
+- Les tirs et leur résultat
+- L'alternance des tours
+- La détection de victoire
+"""
 
-# pour les tours
-joueur_actuel = 1  # 1 ou 2
-
-#chage le tour du joueur
-def changer_tour():
-    global joueur_actuel
-    joueur_actuel = 2 if joueur_actuel == 1 else 1
+import random
 
 
-# gestion des bateaux
-# tailles des bateaux (clé = nom, valeur = taille)
+# ==================== CONSTANTES ====================
+
+# États possibles d'une case de la grille
+VIDE = 0      # Case vide (eau)
+BATEAU = 1    # Case occupée par un bateau
+TOUCHE = 2    # Bateau touché
+RATE = 3      # Tir raté
+COULE = 4     # Bateau coulé
+
+# Définition des bateaux disponibles (nom: taille)
 TAILLES_BATEAUX = {
     "bateaudetaille_5": 5,
     "bateaudetaille_4": 4,
@@ -23,6 +30,9 @@ TAILLES_BATEAUX = {
     "bateaudetaille_2": 2
 }
 
+
+# ==================== VARIABLES GLOBALES ====================
+
 # liste complète des bateaux 
 LISTE_BATEAUX = list(TAILLES_BATEAUX.keys())
 
@@ -30,56 +40,99 @@ LISTE_BATEAUX = list(TAILLES_BATEAUX.keys())
 bateaux_restants_j1 = LISTE_BATEAUX.copy()
 bateaux_restants_j2 = LISTE_BATEAUX.copy()
 
-
-# constantes pour les états des cases de la grille
-VIDE = 0
-BATEAU = 1
-TOUCHE = 2
-RATE = 3
-COULE = 4
-
-
-# grilles vides pour les deux joueurs
+# Grilles de vides pour les deux joueurs
 grille_joueur1 = [[VIDE] * 10 for _ in range(10)]
 grille_joueur2 = [[VIDE] * 10 for _ in range(10)]
 
-#avoir la grille correspondant au joueur
+# Dictionnaire pour faciliter l'accès aux grilles
+grilles = {1: grille_joueur1, 2: grille_joueur2}
+
+# Joueur dont c'est le tour (1 ou 2)
+joueur_actuel = 1
+
+
+# ==================== FONCTIONS DE GESTION DES TOURS ====================
+
+def changer_tour():
+    """Alterne entre le joueur 1 et le joueur 2."""
+    global joueur_actuel
+    joueur_actuel = 2 if joueur_actuel == 1 else 1
+
+
+# ==================== FONCTIONS D'ACCÈS AUX DONNÉES ====================
+
 def grille_joueur(joueur):
+    """Retourne la grille du joueur spécifié (1 ou 2)."""
     return grille_joueur1 if joueur == 1 else grille_joueur2
 
 
-#avoir la taille du bateau à partir de son nom
 def taille_bateau(nom):
+    """Retourne la taille d'un bateau à partir de son nom."""
     return TAILLES_BATEAUX.get(nom)
 
-# vérifier si un bateau peut être placé sans dépasser ou chevaucher un autre bateau
+
+def bateaux_restants_joueur(joueur):
+    """Retourne la liste des bateaux restants à placer pour un joueur."""
+    return bateaux_restants_j1 if joueur == 1 else bateaux_restants_j2
+
+
+def retirer_bateau(joueur, nom_bateau):
+    """Retire un bateau de la liste des bateaux restants à placer."""
+    if joueur == 1:
+        bateaux_restants_j1.remove(nom_bateau)
+    else:
+        bateaux_restants_j2.remove(nom_bateau)
+
+
+# ==================== FONCTIONS DE PLACEMENT ====================
+
 def peut_placer(grille, ligne, col, taille, horizontal=True):
+    """
+    Vérifie si un bateau peut être placé à la position donnée.
     
+    Args:
+        grille: La grille de jeu
+        ligne: Ligne de départ (0-9)
+        col: Colonne de départ (0-9)
+        taille: Taille du bateau
+        horizontal: True pour horizontal, False pour vertical
+    
+    Returns:
+        True si le placement est possible, False sinon
+    """
     if horizontal:
+        # Vérifier que le bateau ne dépasse pas à droite
         if col + taille > 10:
             return False
+        # Vérifier qu'ils ne se soient pas superposés
         for i in range(taille):
             if grille[ligne][col + i] == BATEAU:
                 return False
     else:
+        # Vérifier que le bateau ne dépasse pas en bas
         if ligne + taille > 10:
             return False
+        # Vérifier qu'ils ne se soient pas superposés
         for i in range(taille):
             if grille[ligne + i][col] == BATEAU:
                 return False
     return True
 
 
-# placement aléatoire des bateaux pour un joueur
 def placement_aleatoire(joueur):
-
-    # vider la grille
+    """
+    Place tous les bateaux de manière aléatoire sur la grille d'un joueur.
+    
+    Args:
+        joueur: Le numéro du joueur (1 ou 2)
+    """
+    # Vider la grille
     grille = grille_joueur(joueur)
     for i in range(10):
         for j in range(10):
             grille[i][j] = VIDE
 
-    # RESET des bateaux restants
+    # Réinitialiser les bateaux restants
     if joueur == 1:
         global bateaux_restants_j1
         bateaux_restants_j1 = LISTE_BATEAUX.copy()
@@ -87,26 +140,35 @@ def placement_aleatoire(joueur):
         global bateaux_restants_j2
         bateaux_restants_j2 = LISTE_BATEAUX.copy()
 
-    import random
+    # Placer chaque bateau aléatoirement
     for bateau in LISTE_BATEAUX:
         taille = taille_bateau(bateau)
         place_ok = False
-        while not place_ok: #eviter les chevauchements
+        # Éviter les chevauchements
+        while not place_ok: 
             horizontal = random.choice([True, False])
             ligne = random.randint(0, 9)
             col = random.randint(0, 9)
             place_ok = peut_placer(grille, ligne, col, taille, horizontal)
             if place_ok:
                 placer_bateau(joueur, bateau, ligne, col, horizontal)
-
-
-
-
-# placer un bateau sur la grille du joueur si possible
 def placer_bateau(joueur, nom_bateau, ligne, col, horizontal):
-
+    """
+    Place un bateau sur la grille d'un joueur.
+    
+    Args:
+        joueur: Numéro du joueur (1 ou 2)
+        nom_bateau: Nom du bateau à placer
+        ligne: Ligne de départ (0-9)
+        col: Colonne de départ (0-9)
+        horizontal: True pour horizontal, False pour vertical
+    
+    Returns:
+        True si le placement a réussi, False sinon
+    """
+    # Vérifier que le bateau est disponible
     if nom_bateau not in bateaux_restants_joueur(joueur):
-             return False
+        return False
 
     taille = taille_bateau(nom_bateau)
     if taille is None:
@@ -114,10 +176,11 @@ def placer_bateau(joueur, nom_bateau, ligne, col, horizontal):
 
     grille = grille_joueur(joueur)
 
+    # Vérifier que le placement est possible
     if not peut_placer(grille, ligne, col, taille, horizontal):
         return False
 
-    # placement réel
+    # Placer le bateau sur la grille
     if horizontal:
         for i in range(taille):
             grille[ligne][col + i] = BATEAU
@@ -125,47 +188,111 @@ def placer_bateau(joueur, nom_bateau, ligne, col, horizontal):
         for i in range(taille):
             grille[ligne + i][col] = BATEAU
 
-    # on enlève le bateau de la liste
+    # Retirer le bateau de la liste des bateaux disponibles
     retirer_bateau(joueur, nom_bateau)
     return True
 
+# ==================== FONCTIONS DE RÉINITIALISATION ====================
 
-# obtenir la liste des bateaux restants pour un joueur 
-def bateaux_restants_joueur(joueur):
-    return bateaux_restants_j1 if joueur == 1 else bateaux_restants_j2
-
-# retirer un bateau de la liste des bateaux restants
-def retirer_bateau(joueur, nom_bateau):
-    if joueur == 1:
-        bateaux_restants_j1.remove(nom_bateau)
-    else:
-        bateaux_restants_j2.remove(nom_bateau)
-
-
-#reinitialiser les grilles 
 def reset_jeu():
+    """
+    Réinitialise complètement le jeu :
+    - Vide les grilles des deux joueurs
+    - Réinitialise les listes de bateaux
+    - Remet le tour au joueur 1
+    """
     global bateaux_restants_j1, bateaux_restants_j2, joueur_actuel
     bateaux_restants_j1 = LISTE_BATEAUX.copy()
     bateaux_restants_j2 = LISTE_BATEAUX.copy()
     joueur_actuel = 1
 
+    # Vider toutes les cases des deux grilles
     for i in range(10):
-     for j in range(10):
-        grille_joueur1[i][j] = VIDE
-        grille_joueur2[i][j] = VIDE
+        for j in range(10):
+            grille_joueur1[i][j] = VIDE
+            grille_joueur2[i][j] = VIDE
 
-# fonction pr un bateau coulé
+
+# ==================== FONCTIONS DE DÉTECTION DE BATEAUX ====================
+
+
+def trouver_bateau(joueur, ligne, colonne):
+    """
+    Trouve toutes les coordonnées d'un bateau à partir d'une de ses cases.
+    
+    Args:
+        joueur: Numéro du joueur (1 ou 2)
+        ligne: Ligne de la case (0-9)
+        colonne: Colonne de la case (0-9)
+    
+    Returns:
+        Liste des coordonnées (ligne, colonne) du bateau, ou None si pas de bateau
+    """
+    grille = grille_joueur(joueur)
+    
+    # Vérifier qu'il y a un bateau à cette position
+    if grille[ligne][colonne] not in (BATEAU, TOUCHE):
+        return None
+
+    # Recherche horizontale
+    start_col = colonne
+    while start_col > 0 and grille[ligne][start_col - 1] in (BATEAU, TOUCHE):
+        start_col -= 1
+    end_col = colonne
+    while end_col < 9 and grille[ligne][end_col + 1] in (BATEAU, TOUCHE):
+        end_col += 1
+    if end_col - start_col + 1 > 1:
+        return [(ligne, c) for c in range(start_col, end_col + 1)]
+
+    # Recherche verticale
+    start_row = ligne
+    while start_row > 0 and grille[start_row - 1][colonne] in (BATEAU, TOUCHE):
+        start_row -= 1
+    end_row = ligne
+    while end_row < 9 and grille[end_row + 1][colonne] in (BATEAU, TOUCHE):
+        end_row += 1
+    if end_row - start_row + 1 > 1:
+        return [(r, colonne) for r in range(start_row, end_row + 1)]
+
+    # Bateau de taille 1
+    return [(ligne, colonne)]
+
+
 def bateau_coule(joueur, ligne, colonne):
-    bateau = trouver_bateau(joueur, ligne, colonne)  # retourne liste de coordonnées du bateau
+    """
+    Vérifie si un bateau est coulé.
+    
+    Args:
+        joueur: Numéro du joueur (1 ou 2)
+        ligne: Ligne d'une case du bateau (0-9)
+        colonne: Colonne d'une case du bateau (0-9)
+    
+    Returns:
+        True si toutes les cases du bateau sont touchées, False sinon
+    """
+    bateau = trouver_bateau(joueur, ligne, colonne)
+    if bateau is None:
+        return False
     return all(grilles[joueur][l][c] == TOUCHE for l, c in bateau)
 
 
-#pour les coordonnées d'un bateau
 def coord_bateau(joueur, ligne, colonne):
+    """Retourne les coordonnées d'un bateau."""
     return trouver_bateau(joueur, ligne, colonne)
 
-#donner la v ictoire si tous les bateaux sont coulés
+
+# ==================== FONCTIONS DE VICTOIRE ====================
+
 def verifier_victoire(joueur):
+    """
+    Vérifie si tous les bateaux d'un joueur ont été coulés.
+    
+    Args:
+        joueur: Numéro du joueur à vérifier (1 ou 2)
+    
+    Returns:
+        True si tous les bateaux sont coulés (= défaite), False sinon
+    """
     for ligne in grilles[joueur]:
         for case in ligne:
             if case == BATEAU:

@@ -151,18 +151,26 @@ panel = creer_panneau
 
 def refresh_mini_grille(mini_grille, grille, theme):
     """
-    Met à jour la mini-grille affichant les bateaux du joueur.
-    
-    Args:
-        mini_grille: Grille miniature de labels Tkinter
-        grille: Grille de jeu logique
-        theme: Thème actif
+    Met à jour la mini-grille affichant l'état du joueur
     """
     import jeu
-    
+
     for i in range(10):
         for j in range(10):
-            if grille[i][j] == jeu.BATEAU:
+            case = grille[i][j]
+
+            if case == jeu.BATEAU:
                 mini_grille[i][j].config(bg=theme["boat"])
-            else:
+
+            elif case == jeu.TOUCHE:
+                mini_grille[i][j].config(bg="black")
+
+            elif case == jeu.RATE:
+                mini_grille[i][j].config(bg="red")
+
+            elif case == jeu.COULE:
+                mini_grille[i][j].config(bg="white")
+
+            else:  # VIDE
                 mini_grille[i][j].config(bg=theme["grid"])
+

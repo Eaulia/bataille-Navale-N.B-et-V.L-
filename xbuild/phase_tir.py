@@ -125,13 +125,14 @@ def clic_tir(ligne, colonne, boutons_tir, mini_grille_joueur, panel_tir):
     boutons_tir[ligne][colonne].unbind("<Button-1>")
 
     # Mettre à jour la mini-grille du joueur
-    refresh_mini_grille(mini_grille_joueur, jeu.grilles[joueur], app.theme_actuel)
+    refresh_mini_grille(mini_grille_joueur, jeu.grilles[1], app.theme_actuel)
 
     # Changer de tour
     jeu.changer_tour()
 
-    #tir automatique de l'IA si mode contre IA apres un délai
-    panel_tir.after(800, lambda: tir_ia(mini_grille_joueur))
+    #tir automatique de l'IA seulement si c son tour 
+    if jeu.joueur_actuel == 2:
+        panel_tir.after(800, lambda: tir_ia(mini_grille_joueur))
 
 def tir_ia(mini_grille_joueur):
     """

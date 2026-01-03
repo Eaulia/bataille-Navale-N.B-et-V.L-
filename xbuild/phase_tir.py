@@ -12,12 +12,16 @@ from tkinter import messagebox
 import jeu
 import apparence as app
 from interface import on_enter, on_leave, refresh_mini_grille
+import random
 
 
 # ==================== VARIABLES GLOBALES ====================
 
 # Pour la gestion des frames
 f_phase_tir = None
+
+# Mémoire de l'IA
+ia_cibles = []  # cases à tester après un tir touché
 
 
 # ==================== FONCTIONS DE PHASE DE TIR ====================
@@ -81,9 +85,13 @@ def clic_tir(ligne, colonne, boutons_tir, mini_grille_joueur, panel_tir):
         mini_grille_joueur: Mini-grille affichant les bateaux du joueur
         panel_tir: Panneau contenant la grille de tir
     """
-    joueur = 1  # Joueur humain
-    adversaire = 2  # IA ou joueur 2
+    # seul le joueur 1 peut tirer 
+    if jeu.joueur_actuel != 1:
+        return 
 
+    joueur = jeu.joueur_actuel
+    adversaire =2
+    
     # Vérifier l'état actuel pour éviter de tirer deux fois
     etat = jeu.grilles[adversaire][ligne][colonne]
     if etat in [jeu.TOUCHE, jeu.RATE, jeu.COULE]:
@@ -103,6 +111,11 @@ def clic_tir(ligne, colonne, boutons_tir, mini_grille_joueur, panel_tir):
                 boutons_tir[l][c].config(bg="white", relief="sunken")  # blanc pour bateau coulé
                 jeu.grilles[adversaire][l][c] = jeu.COULE
             messagebox.showinfo("Navire coulé !", "Vous avez coulé un navire !")
+        
+        # Vérifier la victoire
+        if jeu.verifier_victoire(adversaire):
+            messagebox.showinfo ("Victoire !", f"Le joueur {joueur} a gagné la partie !")
+
     else:
         # raté
         jeu.grilles[adversaire][ligne][colonne] = jeu.RATE
@@ -114,7 +127,76 @@ def clic_tir(ligne, colonne, boutons_tir, mini_grille_joueur, panel_tir):
     # Mettre à jour la mini-grille du joueur
     refresh_mini_grille(mini_grille_joueur, jeu.grilles[joueur], app.theme_actuel)
 
+    # Changer de tour
+    jeu.changer_tour()
 
+    #tir automatique de l'IA si mode contre IA apres un délai
+    panel_tir.after(800, lambda: tir_ia(mini_grille_joueur))
+
+def tir_ia(mini_grille_joueur):
+    """
+    IA :
+    - tire autour si elle touche
+    - sinon tire en quadrillage
+    """
+    global ia_cibles
+
+    adversaire = 1  # joueur humain
+
+    ligne = None
+    colonne = None
+
+    # ciblage: tirer autour d’un bateau touché
+    while ia_cibles and ligne is None:
+        l, c = ia_cibles.pop(0)
+        if jeu.grilles[adversaire][l][c] in [jeu.VIDE, jeu.BATEAU]:
+            ligne, colonne = l, c
+
+    # recherche : quadrillage
+    if ligne is None:
+        cases_possibles = []
+
+        for l in range(10):
+            for c in range(10):
+                if (l + c) % 2 == 0:
+                    if jeu.grilles[adversaire][l][c] in [jeu.VIDE, jeu.BATEAU]:
+                        cases_possibles.append((l, c))
+
+        # sécurité si le quadrillage est vide
+        if not cases_possibles:
+            for l in range(10):
+                for c in range(10):
+                    if jeu.grilles[adversaire][l][c] in [jeu.VIDE, jeu.BATEAU]:
+                        cases_possibles.append((l, c))
+
+        ligne, colonne = random.choice(cases_possibles)
+
+    # appliquer le tir
+    if jeu.grilles[adversaire][ligne][colonne] == jeu.BATEAU:
+        jeu.grilles[adversaire][ligne][colonne] = jeu.TOUCHE
+
+        # Ajouter les cases autour
+        for dl, dc in [(-1,0), (1,0), (0,-1), (0,1)]:
+            nl, nc = ligne + dl, colonne + dc
+            if 0 <= nl < 10 and 0 <= nc < 10:
+                if jeu.grilles[adversaire][nl][nc] in [jeu.VIDE, jeu.BATEAU]:
+                    ia_cibles.append((nl, nc))
+    else:
+        jeu.grilles[adversaire][ligne][colonne] = jeu.RATE
+
+    # mise à jour graphique
+    refresh_mini_grille(mini_grille_joueur, jeu.grilles[adversaire], app.theme_actuel)
+
+    # vérifier victoire IA
+    if jeu.verifier_victoire(adversaire):
+        messagebox.showinfo("Défaite", "L'IA a gagné la partie.")
+        return
+
+    #retour au joueur humain
+    jeu.changer_tour()
+
+
+    
 def demarrer_phase_tir(frame_placement_initial=None):
     """
     Démarre la phase de tir après le placement des bateaux.

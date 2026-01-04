@@ -22,6 +22,8 @@ f_phase_tir = None
 
 # Mémoire de l'IA
 ia_cibles = []  # cases à tester après un tir touché
+ia_touches = []  # cases touchées (non coulées) pour détecter le sens
+ia_direction = None  # 'H' pour horizontal, 'V' pour vertical, None si sens non détecté
 
 
 # ==================== FONCTIONS DE PHASE DE TIR ====================
@@ -68,8 +70,6 @@ def initialiser_phase_tir(frame, theme):
 
     # Configurer colonnes/lignes pour qu'elles prennent tout l'espace
     for i in range(10):
-        panel_joueur.grid_columnconfigure(i, weight=1)
-        panel_joueur.grid_rowconfigure(i, weight=1)
         panel_tir.grid_columnconfigure(i, weight=1)
         panel_tir.grid_rowconfigure(i, weight=1)
 
@@ -137,10 +137,11 @@ def clic_tir(ligne, colonne, boutons_tir, mini_grille_joueur, panel_tir):
 def tir_ia(mini_grille_joueur):
     """
     IA :
-    - tire autour si elle touche
+    - si sens détecté (2+ touches alignées), tire dans cette direction
+    - sinon tire autour si elle touche
     - sinon tire en quadrillage
     """
-    global ia_cibles
+    global ia_cibles, ia_touches, ia_direction
 
     adversaire = 1  # joueur humain
 
@@ -175,13 +176,63 @@ def tir_ia(mini_grille_joueur):
     # appliquer le tir
     if jeu.grilles[adversaire][ligne][colonne] == jeu.BATEAU:
         jeu.grilles[adversaire][ligne][colonne] = jeu.TOUCHE
+        ia_touches.append((ligne, colonne))
 
-        # Ajouter les cases autour
-        for dl, dc in [(-1,0), (1,0), (0,-1), (0,1)]:
-            nl, nc = ligne + dl, colonne + dc
-            if 0 <= nl < 10 and 0 <= nc < 10:
-                if jeu.grilles[adversaire][nl][nc] in [jeu.VIDE, jeu.BATEAU]:
-                    ia_cibles.append((nl, nc))
+        # Détecter le sens si on a au moins 2 touches
+        if len(ia_touches) >= 2 and ia_direction is None:
+            # Chercher si deux touches sont adjacentes et alignées
+            for i in range(len(ia_touches) - 1):
+                t1 = ia_touches[i]
+                t2 = ligne, colonne
+                
+                # Vérifier si adjacentes verticalement (même colonne, lignes consécutives)
+                if t1[1] == t2[1] and abs(t1[0] - t2[0]) == 1:
+                    ia_direction = 'V'
+                    # Nettoyer les cibles et ne garder que les verticales
+                    ia_cibles = []
+                    break
+                # Vérifier si adjacentes horizontalement (même ligne, colonnes consécutives)
+                elif t1[0] == t2[0] and abs(t1[1] - t2[1]) == 1:
+                    ia_direction = 'H'
+                    # Nettoyer les cibles et ne garder que les horizontales
+                    ia_cibles = []
+                    break
+        
+        # Ajouter les cases autour selon le sens détecté
+        if ia_direction == 'H':
+            # Sens horizontal: tirer à gauche et à droite (même ligne, colonnes différentes)
+            # On cible toutes les touches existantes pour étendre dans les deux directions
+            for touch in ia_touches:
+                for dl, dc in [(0, -1), (0, 1)]:
+                    nl, nc = touch[0] + dl, touch[1] + dc
+                    if 0 <= nl < 10 and 0 <= nc < 10:
+                        if jeu.grilles[adversaire][nl][nc] in [jeu.VIDE, jeu.BATEAU]:
+                            if (nl, nc) not in ia_cibles:
+                                ia_cibles.append((nl, nc))
+        elif ia_direction == 'V':
+            # Sens vertical: tirer en haut et en bas (même colonne, lignes différentes)
+            # On cible toutes les touches existantes pour étendre dans les deux directions
+            for touch in ia_touches:
+                for dl, dc in [(-1, 0), (1, 0)]:
+                    nl, nc = touch[0] + dl, touch[1] + dc
+                    if 0 <= nl < 10 and 0 <= nc < 10:
+                        if jeu.grilles[adversaire][nl][nc] in [jeu.VIDE, jeu.BATEAU]:
+                            if (nl, nc) not in ia_cibles:
+                                ia_cibles.append((nl, nc))
+        else:
+            # Pas de sens détecté: tirer dans les 4 directions autour de la dernière touche
+            for dl, dc in [(-1,0), (1,0), (0,-1), (0,1)]:
+                nl, nc = ligne + dl, colonne + dc
+                if 0 <= nl < 10 and 0 <= nc < 10:
+                    if jeu.grilles[adversaire][nl][nc] in [jeu.VIDE, jeu.BATEAU]:
+                        if (nl, nc) not in ia_cibles:
+                            ia_cibles.append((nl, nc))
+        
+        # Vérifier si le bateau est coulé pour réinitialiser la mémoire
+        if jeu.bateau_coule(adversaire, ligne, colonne):
+            ia_touches = []
+            ia_direction = None
+            ia_cibles = []  # Réinitialiser les cibles car le bateau est coulé
     else:
         jeu.grilles[adversaire][ligne][colonne] = jeu.RATE
 

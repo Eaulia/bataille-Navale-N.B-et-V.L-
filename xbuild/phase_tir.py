@@ -102,7 +102,7 @@ def clic_tir(ligne, colonne, boutons_tir, mini_grille_joueur, panel_tir):
     if etat == jeu.BATEAU:
         # touché
         jeu.grilles[adversaire][ligne][colonne] = jeu.TOUCHE
-        boutons_tir[ligne][colonne].config(bg="black", relief="sunken")  # noir pour touché
+        boutons_tir[ligne][colonne].config(bg="#C83333", relief="sunken")  # noir pour touché
 
         # Vérifier si le navire est coulé
         if jeu.bateau_coule(adversaire, ligne, colonne):
@@ -119,7 +119,7 @@ def clic_tir(ligne, colonne, boutons_tir, mini_grille_joueur, panel_tir):
     else:
         # raté
         jeu.grilles[adversaire][ligne][colonne] = jeu.RATE
-        boutons_tir[ligne][colonne].config(bg="red", relief="sunken")  # rouge pour raté
+        boutons_tir[ligne][colonne].config(bg="#252121", relief="sunken")  # rouge pour raté
 
     # Désactiver le clic pour ne pas tirer dessus à nouveau
     boutons_tir[ligne][colonne].unbind("<Button-1>")

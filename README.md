@@ -39,3 +39,6 @@ commandes github :
     git commit -m ”comment”
     git push push le plus souvent possible 
     git pull des que tu t’assois. tu pull comme ça tu recuperes tt d’un coup pas besoin d’envoyer à chaque fois 
+
+code :
+rapport : justifier les choix pk j'utilise cette methode mettre la structure le base intro c'est quoi on veut faire quoi cmt ca marche expliquer en general c'est comme un tuto expliquer fonction par fonction cettte partie ca sert a ca comment on l'auratu fait si on avait plus de temps axes d'améliorations ettt genre si on avait plus dedelais cmt on aurait fait des que tu lis le projet tu peux le continuer une couleur par partie code note communerapport note individualisé page : une dizaine 

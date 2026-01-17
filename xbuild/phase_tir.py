@@ -13,6 +13,7 @@ import jeu
 import apparence as app
 from interface import on_enter, on_leave, refresh_mini_grille
 import random
+import navigation as nav
 
 
 # ==================== VARIABLES GLOBALES ====================
@@ -85,7 +86,7 @@ def initialiser_phase_tir(frame, theme):
 
     def retour_menu():
         jeu.reset_session()
-        swap_frames(f_phase_tir, nav.root.children['!frame4'])
+        app.swap_frames(f_phase_tir, nav.root.children['!frame4'])
 
     tk.Button(
         zone_boutons,
@@ -121,7 +122,7 @@ def clic_tir(ligne, colonne, boutons_tir, mini_grille_joueur, panel_tir):
     if etat == jeu.BATEAU:
         # touché
         jeu.grilles[adversaire][ligne][colonne] = jeu.TOUCHE
-        boutons_tir[ligne][colonne].config(bg="#C83333", relief="sunken")  # noir pour touché
+        boutons_tir[ligne][colonne].config(bg="#C83333", relief="sunken")  # rouge pour tocado
 
         # Vérifier si le navire est coulé
         if jeu.bateau_coule(adversaire, ligne, colonne):
@@ -130,37 +131,35 @@ def clic_tir(ligne, colonne, boutons_tir, mini_grille_joueur, panel_tir):
                 boutons_tir[l][c].config(bg="white", relief="sunken")  # blanc pour bateau coulé
                 jeu.grilles[adversaire][l][c] = jeu.COULE
             messagebox.showinfo("Navire coulé !", "Vous avez coulé un navire !")
-        
+            
         # Vérifier la victoire
-        if jeu.verifier_victoire(adversaire):
-        # Incrémenter le score
-            jeu.victoires_joueur1 += 1
+            if jeu.verifier_victoire(adversaire):
+                # Incrémenter le score
+                jeu.victoires_joueur1 += 1
 
-        choix = messagebox.askquestion(
-            "Victoire !",
-            f"Le joueur {joueur} a gagné la partie !\n\n"
-            f"Score :\n"
-            f"Joueur 1 : {jeu.victoires_joueur1}\n"
-            f"Joueur 2 : {jeu.victoires_joueur2}\n\n"
-            "Rejouer ?"
-        )
+                choix = messagebox.askquestion(
+                    "Victoire !",
+                    f"Le joueur {joueur} a gagné la partie !\n\n"
+                    f"Score :\n"
+                    f"Joueur 1 : {jeu.victoires_joueur1}\n"
+                    f"Ia : {jeu.victoires_joueur2}\n\n"
+                    "Rejouer ?"
+                )
 
-        from navigation import swap_frames, get_frame_placement_ia
-        import navigation as nav # importer pour accéder à root
+                from navigation import swap_frames, get_frame_placement_ia
 
-        if choix == "yes":
-            jeu.reset_jeu()
-            swap_frames(f_phase_tir, get_frame_placement_ia())
-        else:
-            jeu.reset_session()
-            swap_frames(f_phase_tir, nav.root.children['!frame4'])
-
-        return
+                if choix == "yes":
+                    jeu.reset_jeu()
+                    swap_frames(f_phase_tir, get_frame_placement_ia())
+                else:
+                    jeu.reset_session()
+                    swap_frames(f_phase_tir, nav.root.children['!frame4'])
+                return
 
     else:
         # raté
         jeu.grilles[adversaire][ligne][colonne] = jeu.RATE
-        boutons_tir[ligne][colonne].config(bg="#252121", relief="sunken")  # rouge pour raté
+        boutons_tir[ligne][colonne].config(bg="#252121", relief="sunken")  # noir pour raté
 
     # Désactiver le clic pour ne pas tirer dessus à nouveau
     boutons_tir[ligne][colonne].unbind("<Button-1>")
@@ -274,38 +273,36 @@ def tir_ia(mini_grille_joueur):
             ia_touches = []
             ia_direction = None
             ia_cibles = []  # Réinitialiser les cibles car le bateau est coulé
+            
+            # Vérifier la victoire 
+            if jeu.verifier_victoire(adversaire):
+                jeu.victoires_joueur2 += 1
+
+                choix = messagebox.askquestion(
+                    "Défaite",
+                    f"L'IA a gagné la partie.\n\n"
+                    f"Score :\n"
+                    f"Joueur : {jeu.victoires_joueur1}\n"
+                    f"IA : {jeu.victoires_joueur2}\n\n"
+                    "Rejouer ?"
+                )
+
+                from navigation import swap_frames, get_frame_placement_ia
+
+                if choix == "yes":
+                    jeu.reset_jeu()
+                    swap_frames(f_phase_tir, get_frame_placement_ia())
+                else:
+                    jeu.reset_session()
+                    swap_frames(f_phase_tir, nav.root.children['!frame4'])
+                return
     else:
         jeu.grilles[adversaire][ligne][colonne] = jeu.RATE
 
     # mise à jour graphique
     refresh_mini_grille(mini_grille_joueur, jeu.grilles[adversaire], app.theme_actuel)
 
-    # vérifier victoire IA
-    if jeu.verifier_victoire(adversaire):
-        jeu.victoires_joueur2 += 1
-
-    choix = messagebox.askquestion(
-        "Défaite",
-        f"L'IA a gagné la partie.\n\n"
-        f"Score :\n"
-        f"Joueur : {jeu.victoires_joueur1}\n"
-        f"IA : {jeu.victoires_joueur2}\n\n"
-        "Rejouer ?"
-    )
-
-    from navigation import swap_frames, get_frame_placement_ia
-
-    if choix == "yes":
-        jeu.reset_jeu()
-        swap_frames(f_phase_tir, get_frame_placement_ia())
-    else:
-        jeu.reset_session()
-        swap_frames(f_phase_tir, nav.root.children['!frame4'])
-
-    return
-
-
-    #retour au joueur humain
+    # Retour au joueur humain
     jeu.changer_tour()
 
 

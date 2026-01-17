@@ -20,6 +20,9 @@ BATEAU = 1    # Case occupée par un bateau
 TOUCHE = 2    # Bateau touché
 RATE = 3      # Tir raté
 COULE = 4     # Bateau coulé
+victoires_joueur1 = 0 #pour compter les victoires des joueurs
+victoires_joueur2 = 0 #idem
+
 
 # Définition des bateaux disponibles (nom: taille)
 TAILLES_BATEAUX = {
@@ -192,7 +195,7 @@ def placer_bateau(joueur, nom_bateau, ligne, col, horizontal):
     retirer_bateau(joueur, nom_bateau)
     return True
 
-# ==================== FONCTIONS DE RÉINITIALISATION ====================
+# ==================== FONCTIONS DE RÉINITIALISATION D'1 PARTIE ====================
 
 def reset_jeu():
     """
@@ -212,6 +215,17 @@ def reset_jeu():
             grille_joueur1[i][j] = VIDE
             grille_joueur2[i][j] = VIDE
 
+
+#===================== FONCTIONS DE REINITIALISATION DE SERIE DE PARTIES ====================
+
+def reset_session(): 
+    """
+    Réinitialise toute la session 
+    """
+    global victoires_joueur1, victoires_joueur2
+    victoires_joueur1 = 0
+    victoires_joueur2 = 0
+    reset_jeu()
 
 # ==================== FONCTIONS DE DÉTECTION DE BATEAUX ====================
 

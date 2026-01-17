@@ -25,7 +25,6 @@ ia_cibles = []  # cases à tester après un tir touché
 ia_touches = []  # cases touchées (non coulées) pour détecter le sens
 ia_direction = None  # 'H' pour horizontal, 'V' pour vertical, None si sens non détecté
 
-
 # ==================== FONCTIONS DE PHASE DE TIR ====================
 
 def initialiser_phase_tir(frame, theme):
@@ -36,6 +35,10 @@ def initialiser_phase_tir(frame, theme):
         frame: Frame conteneur
         theme: Thème actif
     """
+    # Nettoyer le frame pour éviter les widgets empilés
+    for widget in frame.winfo_children():
+        widget.destroy()
+    
     # Créer les deux panneaux (grille joueur + grille de tir)
     p = tk.PanedWindow(frame, orient=tk.HORIZONTAL)
     p.pack(fill='both', expand=True)
@@ -54,6 +57,9 @@ def initialiser_phase_tir(frame, theme):
             b.grid(row=i, column=j, padx=1, pady=1)
             ligne.append(b)
         mini_grille_joueur.append(ligne)
+    
+    # Initialiser la mini-grille avec les bateaux du joueur 1
+    refresh_mini_grille(mini_grille_joueur, jeu.grilles[1], theme)
 
     # Grille de tir
     boutons_tir = []
@@ -73,6 +79,19 @@ def initialiser_phase_tir(frame, theme):
         panel_tir.grid_columnconfigure(i, weight=1)
         panel_tir.grid_rowconfigure(i, weight=1)
 
+    #bouton retour 
+    zone_boutons = tk.Frame(panel_tir, bg=theme["frame"])
+    zone_boutons.grid(row=10, column=0, columnspan=10, pady=10)
+
+    def retour_menu():
+        jeu.reset_session()
+        swap_frames(f_phase_tir, nav.root.children['!frame4'])
+
+    tk.Button(
+        zone_boutons,
+        text="Retour au menu",
+        command=retour_menu
+        ).pack()
 
 def clic_tir(ligne, colonne, boutons_tir, mini_grille_joueur, panel_tir):
     """
@@ -114,7 +133,29 @@ def clic_tir(ligne, colonne, boutons_tir, mini_grille_joueur, panel_tir):
         
         # Vérifier la victoire
         if jeu.verifier_victoire(adversaire):
-            messagebox.showinfo ("Victoire !", f"Le joueur {joueur} a gagné la partie !")
+        # Incrémenter le score
+            jeu.victoires_joueur1 += 1
+
+        choix = messagebox.askquestion(
+            "Victoire !",
+            f"Le joueur {joueur} a gagné la partie !\n\n"
+            f"Score :\n"
+            f"Joueur 1 : {jeu.victoires_joueur1}\n"
+            f"Joueur 2 : {jeu.victoires_joueur2}\n\n"
+            "Rejouer ?"
+        )
+
+        from navigation import swap_frames, get_frame_placement_ia
+        import navigation as nav # importer pour accéder à root
+
+        if choix == "yes":
+            jeu.reset_jeu()
+            swap_frames(f_phase_tir, get_frame_placement_ia())
+        else:
+            jeu.reset_session()
+            swap_frames(f_phase_tir, nav.root.children['!frame4'])
+
+        return
 
     else:
         # raté
@@ -148,7 +189,7 @@ def tir_ia(mini_grille_joueur):
     ligne = None
     colonne = None
 
-    # ciblage: tirer autour d’un bateau touché
+    # ciblage: tirer autour d'un bateau touché
     while ia_cibles and ligne is None:
         l, c = ia_cibles.pop(0)
         if jeu.grilles[adversaire][l][c] in [jeu.VIDE, jeu.BATEAU]:
@@ -241,8 +282,28 @@ def tir_ia(mini_grille_joueur):
 
     # vérifier victoire IA
     if jeu.verifier_victoire(adversaire):
-        messagebox.showinfo("Défaite", "L'IA a gagné la partie.")
-        return
+        jeu.victoires_joueur2 += 1
+
+    choix = messagebox.askquestion(
+        "Défaite",
+        f"L'IA a gagné la partie.\n\n"
+        f"Score :\n"
+        f"Joueur : {jeu.victoires_joueur1}\n"
+        f"IA : {jeu.victoires_joueur2}\n\n"
+        "Rejouer ?"
+    )
+
+    from navigation import swap_frames, get_frame_placement_ia
+
+    if choix == "yes":
+        jeu.reset_jeu()
+        swap_frames(f_phase_tir, get_frame_placement_ia())
+    else:
+        jeu.reset_session()
+        swap_frames(f_phase_tir, nav.root.children['!frame4'])
+
+    return
+
 
     #retour au joueur humain
     jeu.changer_tour()
@@ -275,3 +336,4 @@ def demarrer_phase_tir(frame_placement_initial=None):
 
     # Afficher le frame de tir
     swap_frames(frame_placement_initial, f_phase_tir)
+

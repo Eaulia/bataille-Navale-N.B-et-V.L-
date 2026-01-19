@@ -161,6 +161,9 @@ for i in range(10):
         ligne.append(b)
     boutons_pvp.append(ligne)
 
+#rendre grille pvp accessible globalement
+root.boutons_pvp = boutons_pvp
+
 # Créer le panneau de bateaux disponibles
 plc.drag_widgets_pvp, plc.orientation_label_pvp = fn.creer_panneau_bateaux(panel1, 1, app.theme_actuel)
 
@@ -228,6 +231,9 @@ for i in range(10):
         b.bind("<Motion>", lambda e, l=i, c=j: fn.previsualiser_placement(l, c, boutons_ia, app.theme_actuel))
         ligne.append(b)
     boutons_ia.append(ligne)
+
+#rendre grille ia accessible globalement
+root.boutons_ia = boutons_ia
 
 # Boutons de contrôle
 tk.Button(

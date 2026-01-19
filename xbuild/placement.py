@@ -428,3 +428,24 @@ def vider_grille(boutons, theme_actuel):
     for ligne in boutons:
         for bouton in ligne:
             bouton.config(bg=theme_actuel["grid"])
+
+def reset_placement(joueur):
+    """
+    Réinitialise complètement le placement :
+    - joueur actif
+    - bateau sélectionné
+    - orientation
+    - listes de bateaux à placer
+    """
+    global joueur_en_placement, bateau_en_cours, orientation_horizontale
+
+    joueur_en_placement = joueur
+    bateau_en_cours = None
+    orientation_horizontale = True
+
+    # Réinitialiser les bateaux restants
+    import jeu
+    if joueur == 1:
+        jeu.bateaux_restants_j1 = jeu.LISTE_BATEAUX.copy()
+    else:
+        jeu.bateaux_restants_j2 = jeu.LISTE_BATEAUX.copy()

@@ -120,7 +120,7 @@ fn.bouton(
 tk.Button(f4, text='Retour', command=lambda: fn.swap_frames(f4, f1)).pack(pady=5)
 
 
-# ==================== FRAME 2 : MODE JOUEUR CONTRE JOUEUR ====================
+# ==================== FRAME 2 : MODE JOUEUR CONTRE JOUEUR (pas finit) ====================
 
 tk.Label(f2, text='Bienvenue dans ma Bataille Navale ;D', font=('Arial',14,'bold')).pack(pady=10)
 
@@ -187,7 +187,7 @@ tk.Button(
 tk.Button(f2, text='Retour', command=lambda: fn.swap_frames(f2, f4)).pack(pady=5)
 
 
-# ==================== FRAME 5 : MODE CONTRE IA ====================
+# ====================== FRAME 5 : MODE CONTRE IA =======================
 
 tk.Label(f5, text='Bienvenue dans ma Bataille Navale ;D', font=('Arial', 14, 'bold')).pack(pady=10)
 

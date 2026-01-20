@@ -11,6 +11,7 @@ import tkinter as tk
 from tkinter import messagebox
 import jeu
 import apparence as app
+from phase_tir import demarrer_phase_tir
 
 
 # ==================== VARIABLES GLOBALES ====================
@@ -83,41 +84,58 @@ def creer_widget_bateau(parent, nom_bateau, taille, theme):
 def previsualiser_placement(ligne, col, boutons, theme):
     """
     Affiche une prévisualisation du placement du bateau.
-    
+
     Args:
-        ligne: Ligne de départ
-        col: Colonne de départ
-        boutons: Grille de boutons
+        ligne: Ligne de départ (0-9)
+        col: Colonne de départ (0-9)
+        boutons: Grille de boutons Tkinter (10x10)
         theme: Thème actuel
     """
     global preview_cases, bateau_en_cours, orientation_horizontale
-    
+
+    # Sécurité : si la grille n'est pas encore prête
+    if boutons is None or len(boutons) != 10:
+        return
+
     # Effacer l'ancienne prévisualisation
     effacer_previsualisation(boutons, theme)
-    
+
+    # Aucun bateau sélectionné
     if bateau_en_cours is None:
         return
-    
+
     taille = jeu.taille_bateau(bateau_en_cours)
     if taille is None:
         return
-    
-    # Vérifier si le placement est possible
+
+    # Vérification des limites de la grille AVANT toute action
+    if orientation_horizontale:
+        if col + taille > 10:
+            return
+    else:
+        if ligne + taille > 10:
+            return
+
+    # Récupérer la grille logique du joueur
     grille = jeu.grille_joueur(joueur_en_placement)
-    placement_valide = jeu.peut_placer(grille, ligne, col, taille, orientation_horizontale)
-    
+
+    # Vérifier si le placement est valide selon la logique du jeu
+    placement_valide = jeu.peut_placer(
+        grille, ligne, col, taille, orientation_horizontale
+    )
+
     # Couleur de prévisualisation
     couleur = "lightgreen" if placement_valide else "#FF6666"
-    
-    # Afficher la prévisualisation
+
+    # Affichage de la prévisualisation
     for i in range(taille):
         if orientation_horizontale:
             r, c = ligne, col + i
         else:
             r, c = ligne + i, col
-        
+
+        # sécurité supp
         if 0 <= r < 10 and 0 <= c < 10:
-            # Vérifier que la case n'est pas déjà occupée par un bateau
             if grille[r][c] == jeu.VIDE:
                 boutons[r][c].config(bg=couleur)
                 preview_cases.append((r, c))
@@ -133,11 +151,17 @@ def effacer_previsualisation(boutons, theme):
     """
     global preview_cases
     
-    grille = jeu.grille_joueur(joueur_en_placement)
+    if boutons is None:
+        preview_cases = []
+        return
+
     for r, c in preview_cases:
-        if grille[r][c] == jeu.VIDE:
-            boutons[r][c].config(bg=theme["grid"])
-    
+        if 0 <= r < 10 and 0 <= c < 10:
+            try:
+                boutons[r][c].config(bg=theme["grid"])
+            except IndexError:
+                pass
+
     preview_cases = []
 
 
@@ -387,33 +411,52 @@ def clic_placement_bateau(ligne, colonne, boutons, theme_actuel):
 def clic_placement_bateau_ia(ligne, colonne, boutons, theme_actuel, paned=None, panel1=None, mini_grille_joueur=None):
     """
     Gère le clic sur une case pour placer un bateau (mode contre IA).
-    
+
     Args:
-        ligne: Numéro de ligne cliquée (0-9)
-        colonne: Numéro de colonne cliquée (0-9)
+        ligne: Ligne cliquée (0-9)
+        colonne: Colonne cliquée (0-9)
         boutons: Grille de boutons Tkinter
         theme_actuel: Thème actif
-        paned: Widget PanedWindow (non utilisé)
-        panel1: Panneau (non utilisé)
-        mini_grille_joueur: Grille miniature (non utilisé)
     """
-    global drag_widgets_ia
-    joueur = 1  # Toujours le joueur humain
+    global drag_widgets_ia, bateau_en_cours, orientation_horizontale
 
-    # Effacer la prévisualisation
+    joueur = 1  # Joueur humain
+
+    # sécurité : grille non prête
+    if boutons is None or len(boutons) != 10:
+        return
+
+    # aucun bateau sélectionné
+    if bateau_en_cours is None:
+        return
+
+    taille = jeu.taille_bateau(bateau_en_cours)
+    if taille is None:
+        return
+
+    # vérification des limites avant le placement
+    if orientation_horizontale:
+        if colonne + taille > 10:
+            return
+    else:
+        if ligne + taille > 10:
+            return
+
+    # effacer la prévisualisation
     effacer_previsualisation(boutons, theme_actuel)
-    
-    # Placer le bateau sélectionné
-    placement_reussi = placer_bateau_drag(ligne, colonne, boutons, theme_actuel, drag_widgets_ia)
-    
-    if placement_reussi:
-        # Vérifier si le joueur a terminé tous ses bateaux
-        if not jeu.bateaux_restants_joueur(joueur):
-            # Placement aléatoire des bateaux de l'IA
-            jeu.placement_aleatoire(2)  # IA = joueur 2
 
-            # Démarrer la phase de tir (swap automatique du frame IA → phase de tir)
-            from phase_tir import demarrer_phase_tir
+    # tentative de placement
+    placement_reussi = placer_bateau_drag(
+        ligne, colonne, boutons, theme_actuel, drag_widgets_ia
+    )
+
+    if placement_reussi:
+        # si tous les bateaux du joueur sont placés
+        if not jeu.bateaux_restants_joueur(joueur):
+            # placement aléatoire des bateaux de l'IA
+            jeu.placement_aleatoire(2)
+
+            # lancement de la phase de tir
             demarrer_phase_tir()
 
 

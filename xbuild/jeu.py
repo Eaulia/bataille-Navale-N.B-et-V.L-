@@ -155,6 +155,7 @@ def placement_aleatoire(joueur):
             place_ok = peut_placer(grille, ligne, col, taille, horizontal)
             if place_ok:
                 placer_bateau(joueur, bateau, ligne, col, horizontal)
+                
 def placer_bateau(joueur, nom_bateau, ligne, col, horizontal):
     """
     Place un bateau sur la grille d'un joueur.

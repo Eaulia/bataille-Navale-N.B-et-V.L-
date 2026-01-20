@@ -151,40 +151,8 @@ def clic_tir(ligne, colonne, boutons_tir, mini_grille_joueur, panel_tir):
                 from navigation import swap_frames, get_frame_placement_ia
 
                 if choix == "yes":
-        
-                    #réinitialiser logique
-                    jeu.reset_jeu()
-                    #réinitialiser le placement des bateaux
-                    plc.reset_placement(1)
-
-                    #--recreer bateaux disponibles--
-
-                    #détruire ancien panneau 
-                    for widget in nav.frame_placement_ia.winfo_children():
-                        if isinstance(widget, tk.PanedWindow):
-                            for pane in widget.panes():
-                                widget.nametowidget(pane).destroy()
-
-                    #recréer panneaux 
-                    p = tk.PanedWindow(nav.frame_placement_ia, orient=tk.HORIZONTAL, width=665, height=440)
-                    p.pack_propagate(False)
-                    p.pack(fill='both', expand=True, pady=2, padx=2)
-
-                    panel1 = fn.panel(p, 200, 250, app.theme_actuel, 'Bateaux Disponibles')
-                    panel2 = fn.panel(p, 250, 600, app.theme_actuel, 'Interface de Jeu')
-
-                    p.add(panel1)
-                    p.add(panel2)
-
-                    #recréer panneau de bateaux 
-                    plc.drag_widgets_ia, plc.orientation_label_ia = fn.creer_panneau_bateaux(panel1, 1, app.theme_actuel)
-                    #réinitialiser mémoire ia 
-                    ia_cibles = []
-                    ia_touches = []
-                    ia_direction = None
-
-                    #retour placement
-                    nav.swap_frames(f_phase_tir, get_frame_placement_ia())
+                    from navigation import nouvelle_partie_ia
+                    nouvelle_partie_ia(app.theme_actuel)
                 else:
                     jeu.reset_session()
                     swap_frames(f_phase_tir, nav.root.children['!frame4'])
@@ -324,40 +292,8 @@ def tir_ia(mini_grille_joueur):
                 from navigation import swap_frames, get_frame_placement_ia
 
                 if choix == "yes":
-        
-                    #réinitialiser logique
-                    jeu.reset_jeu()
-                    #réinitialiser le placement des bateaux
-                    plc.reset_placement(1)
-
-                    #--recreer bateaux disponibles--
-
-                    #détruire ancien panneau 
-                    for widget in nav.frame_placement_ia.winfo_children():
-                        if isinstance(widget, tk.PanedWindow):
-                            for pane in widget.panes():
-                                widget.nametowidget(pane).destroy()
-
-                    #recréer panneaux 
-                    p = tk.PanedWindow(nav.frame_placement_ia, orient=tk.HORIZONTAL, width=665, height=440)
-                    p.pack_propagate(False)
-                    p.pack(fill='both', expand=True, pady=2, padx=2)
-
-                    panel1 = fn.panel(p, 200, 250, app.theme_actuel, 'Bateaux Disponibles')
-                    panel2 = fn.panel(p, 250, 600, app.theme_actuel, 'Interface de Jeu')
-
-                    p.add(panel1)
-                    p.add(panel2)
-
-                    #recréer panneau de bateaux 
-                    plc.drag_widgets_ia, plc.orientation_label_ia = fn.creer_panneau_bateaux(panel1, 1, app.theme_actuel)
-                    #réinitialiser mémoire ia 
-                    ia_cibles = []
-                    ia_touches = []
-                    ia_direction = None
-
-                    #retour placement
-                    nav.swap_frames(f_phase_tir, get_frame_placement_ia())
+                    from navigation import nouvelle_partie_ia
+                    nouvelle_partie_ia(app.theme_actuel)
                 else:
                     jeu.reset_session()
                     swap_frames(f_phase_tir, nav.root.children['!frame4'])
@@ -370,7 +306,6 @@ def tir_ia(mini_grille_joueur):
 
     # Retour au joueur humain
     jeu.changer_tour()
-
 
     
 def demarrer_phase_tir(frame_placement_initial=None):

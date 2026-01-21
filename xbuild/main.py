@@ -11,11 +11,10 @@ Ce module gère :
 import tkinter as tk
 from tkinter.messagebox import showinfo
 import fonction as fn
-import jeu
 import apparence as app
 import navigation as nav
 import placement as plc
-
+import sons
 
 # ==================== FENÊTRE PRINCIPALE ====================
 
@@ -23,6 +22,7 @@ root = tk.Tk()
 root.title('Bataille navale')
 root.geometry('780x550')
 root.configure(bg=app.theme_actuel["bg"]) 
+sons.jouer_musique("ambiance", loop=-1, volume=0.1)
 
 
 # ==================== CRÉATION DES FRAMES ====================

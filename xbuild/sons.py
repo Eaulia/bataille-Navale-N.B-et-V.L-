@@ -77,5 +77,9 @@ def jouer_musique(nom, loop=-1, volume=0.3):
         except Exception as e:
             print(f"Erreur lecture musique {nom}: {e}")
 
+def arreter_tous_sons():
+    """Arrête tous les sons en cours."""
+    pygame.mixer.stop()
+
 # Charger les sons au démarrage du module
 charger_sons()

@@ -129,7 +129,8 @@ def clic_tir(ligne, colonne, boutons_tir, mini_grille_joueur, panel_tir):
         # touché
         jeu.grilles[adversaire][ligne][colonne] = jeu.TOUCHE
         boutons_tir[ligne][colonne].config(bg="#C83333", relief="sunken")  # rouge pour touché
-        sons.jouer_son("touche", volume=0.7)
+        sons.arreter_tous_sons()
+        sons.jouer_son("touche", volume=0.4)
 
         # Vérifier si le navire est coulé
         if jeu.bateau_coule(adversaire, ligne, colonne):
@@ -137,13 +138,15 @@ def clic_tir(ligne, colonne, boutons_tir, mini_grille_joueur, panel_tir):
             for l, c in coords:
                 boutons_tir[l][c].config(bg="white", relief="sunken")  # blanc pour bateau coulé
                 jeu.grilles[adversaire][l][c] = jeu.COULE
-            sons.jouer_son("coule", volume=0.8)
+            sons.arreter_tous_sons()
+            sons.jouer_son("coule", volume=0.5)
             messagebox.showinfo("Navire coulé !", "Vous avez coulé un navire !")
             
         # Vérifier la victoire
             if jeu.verifier_victoire(adversaire):
                 # Incrémenter le score`
-                sons.jouer_son("victoire", volume=1.0)
+                sons.arreter_tous_sons()
+                sons.jouer_son("victoire", volume=0.6)
                 jeu.victoires_joueur1 += 1
 
                 # enregistrer la partie dans le fichier CSV
@@ -177,6 +180,7 @@ def clic_tir(ligne, colonne, boutons_tir, mini_grille_joueur, panel_tir):
         # raté
         jeu.grilles[adversaire][ligne][colonne] = jeu.RATE
         boutons_tir[ligne][colonne].config(bg="#252121", relief="sunken")  # noir pour raté
+        sons.arreter_tous_sons()
         sons.jouer_son("rate", volume=0.5)
 
     # Désactiver le clic pour ne pas tirer dessus à nouveau

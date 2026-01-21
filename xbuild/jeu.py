@@ -36,6 +36,9 @@ TAILLES_BATEAUX = {
 
 # ==================== VARIABLES GLOBALES ====================
 
+positions_bateaux_j1 = {}
+positions_bateaux_j2 = {}
+
 # liste complète des bateaux 
 LISTE_BATEAUX = list(TAILLES_BATEAUX.keys())
 
@@ -90,6 +93,9 @@ def retirer_bateau(joueur, nom_bateau):
     else:
         bateaux_restants_j2.remove(nom_bateau)
 
+def positions_bateaux(joueur):
+    """Retourne le dictionnaire des positions de bateaux du joueur"""
+    return positions_bateaux_j1 if joueur == 1 else positions_bateaux_j2
 
 # ==================== FONCTIONS DE PLACEMENT ====================
 
@@ -141,11 +147,13 @@ def placement_aleatoire(joueur):
 
     # Réinitialiser les bateaux restants
     if joueur == 1:
-        global bateaux_restants_j1
+        global bateaux_restants_j1, positions_bateaux_j1
         bateaux_restants_j1 = LISTE_BATEAUX.copy()
+        positions_bateaux_j1 = {}
     else:
-        global bateaux_restants_j2
+        global bateaux_restants_j2, positions_bateaux_j2
         bateaux_restants_j2 = LISTE_BATEAUX.copy()
+        positions_bateaux_j2 = {}
 
     # Placer chaque bateau aléatoirement
     for bateau in LISTE_BATEAUX:
@@ -189,12 +197,18 @@ def placer_bateau(joueur, nom_bateau, ligne, col, horizontal):
         return False
 
     # Placer le bateau sur la grille
+    positions = []
     if horizontal:
         for i in range(taille):
             grille[ligne][col + i] = BATEAU
+            positions.append((ligne, col + i))
     else:
         for i in range(taille):
             grille[ligne + i][col] = BATEAU
+            positions.append((ligne + i, col))
+
+    dict_positions = positions_bateaux(joueur)
+    dict_positions[nom_bateau] = positions
 
     # Retirer le bateau de la liste des bateaux disponibles
     retirer_bateau(joueur, nom_bateau)
@@ -210,8 +224,12 @@ def reset_jeu():
     - Remet le tour au joueur 1
     """
     global bateaux_restants_j1, bateaux_restants_j2, joueur_actuel
+    global positions_bateaux_j1, positions_bateaux_j2
+    
     bateaux_restants_j1 = LISTE_BATEAUX.copy()
     bateaux_restants_j2 = LISTE_BATEAUX.copy()
+    positions_bateaux_j1 = {}
+    positions_bateaux_j2 = {}
     joueur_actuel = 1
 
     # Vider toutes les cases des deux grilles
@@ -236,8 +254,54 @@ def reset_session():
 
 # ==================== FONCTIONS DE DÉTECTION DE BATEAUX ====================
 
+def trouver_bateau_par_position(joueur, ligne, colonne):
+    """
+    Trouve le bateau qui occupe une position donnée.
+    
+    Args:
+        joueur: Numéro du joueur (1 ou 2)
+        ligne: Ligne de la case (0-9)
+        colonne: Colonne de la case (0-9)
+    
+    Returns:
+        (nom_bateau, liste_positions) ou (None, None)
+    """
 
-def trouver_bateau(joueur, ligne, colonne):
+    dict_positions = positions_bateaux(joueur)
+    
+    for nom_bateau, positions in dict_positions.items():
+        if (ligne, colonne) in positions:
+            return nom_bateau, positions
+    
+    return None, None
+
+
+def bateau_coule(joueur, ligne, colonne):
+    """
+    Vérifie si le bateau à cette position est coulé.
+    Args:
+        joueur: Numéro du joueur (1 ou 2)
+        ligne: Ligne d'une case du bateau (0-9)
+        colonne: Colonne d'une case du bateau (0-9)
+    
+    Returns:
+        True si toutes les cases du bateau sont touchées, False sinon
+    """
+    grille = grille_joueur(joueur)
+    nom_bateau, positions = trouver_bateau_par_position(joueur, ligne, colonne)
+    
+    if positions is None:
+        return False
+    
+    # Vérifier si toutes les positions du bateau sont touchées
+    return all(grille[l][c] == TOUCHE for l, c in positions)
+
+
+def coord_bateau(joueur, ligne, colonne):
+    """Retourne les coordonnées du bateau à cette position"""
+    return trouver_bateau_par_position(joueur, ligne, colonne)
+
+""'''def trouver_bateau(joueur, ligne, colonne):
     """
     Trouve toutes les coordonnées d'un bateau à partir d'une de ses cases.
     
@@ -299,7 +363,7 @@ def bateau_coule(joueur, ligne, colonne):
 
 def coord_bateau(joueur, ligne, colonne):
     """Retourne les coordonnées d'un bateau."""
-    return trouver_bateau(joueur, ligne, colonne)
+    return trouver_bateau(joueur, ligne, colonne)'''""
 
 
 # ==================== FONCTIONS DE VICTOIRE ====================

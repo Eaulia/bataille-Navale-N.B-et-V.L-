@@ -131,7 +131,7 @@ def clic_tir(ligne, colonne, boutons_tir, mini_grille_joueur, panel_tir):
 
         # Vérifier si le navire est coulé
         if jeu.bateau_coule(adversaire, ligne, colonne):
-            coords = jeu.coord_bateau(adversaire, ligne, colonne)  # liste des cases du bateau
+            nom_bateau, coords = jeu.coord_bateau(adversaire, ligne, colonne)  # liste des cases du bateau
             for l, c in coords:
                 boutons_tir[l][c].config(bg="white", relief="sunken")  # blanc pour bateau coulé
                 jeu.grilles[adversaire][l][c] = jeu.COULE

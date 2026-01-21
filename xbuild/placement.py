@@ -492,3 +492,4 @@ def reset_placement(joueur):
         jeu.bateaux_restants_j1 = jeu.LISTE_BATEAUX.copy()
     else:
         jeu.bateaux_restants_j2 = jeu.LISTE_BATEAUX.copy()
+

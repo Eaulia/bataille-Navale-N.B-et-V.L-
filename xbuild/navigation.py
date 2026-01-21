@@ -190,3 +190,4 @@ def nouvelle_partie_ia(theme):
     )
 
     nav.swap_frames(nav.f_phase_tir, frame) 
+

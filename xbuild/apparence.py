@@ -135,3 +135,4 @@ def changer_theme(theme, root, frames, boutons_pvp, boutons_ia):
 def get_theme_actuel():
     """Retourne le thème actuellement utilisé."""
     return theme_actuel
+

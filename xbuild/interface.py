@@ -163,14 +163,15 @@ def refresh_mini_grille(mini_grille, grille, theme):
                 mini_grille[i][j].config(bg=theme["boat"])
 
             elif case == jeu.TOUCHE:
-                mini_grille[i][j].config(bg="black")
+                mini_grille[i][j].config(bg="red")
 
             elif case == jeu.RATE:
-                mini_grille[i][j].config(bg="red")
+                mini_grille[i][j].config(bg="black")
 
             elif case == jeu.COULE:
                 mini_grille[i][j].config(bg="white")
 
             else:  # VIDE
                 mini_grille[i][j].config(bg=theme["grid"])
+
 

@@ -16,6 +16,7 @@ import random
 import navigation as nav
 import fonction as fn
 import placement as plc
+from csv_manager import enregistrer_partie
 
 
 # ==================== VARIABLES GLOBALES ====================
@@ -120,6 +121,8 @@ def clic_tir(ligne, colonne, boutons_tir, mini_grille_joueur, panel_tir):
         messagebox.showinfo("Info", "Case déjà ciblée !")
         return
 
+    jeu.coups_joueur += 1  # incrémenter le compteur de coups du joueur
+
     # Tir logique
     if etat == jeu.BATEAU:
         # touché
@@ -138,6 +141,14 @@ def clic_tir(ligne, colonne, boutons_tir, mini_grille_joueur, panel_tir):
             if jeu.verifier_victoire(adversaire):
                 # Incrémenter le score
                 jeu.victoires_joueur1 += 1
+
+                # enregistrer la partie dans le fichier CSV
+                enregistrer_partie(
+                    mode="IA",
+                    vainqueur="Joueur",
+                    coups_joueur=jeu.coups_joueur,
+                    coups_ia=jeu.coups_ia
+                )   
 
                 choix = messagebox.askquestion(
                     "Victoire !",
@@ -215,6 +226,8 @@ def tir_ia(mini_grille_joueur):
 
         ligne, colonne = random.choice(cases_possibles)
 
+    jeu.coups_ia += 1  # incrémenter le compteur de coups de l'IA
+
     # appliquer le tir
     if jeu.grilles[adversaire][ligne][colonne] == jeu.BATEAU:
         jeu.grilles[adversaire][ligne][colonne] = jeu.TOUCHE
@@ -279,6 +292,14 @@ def tir_ia(mini_grille_joueur):
             # Vérifier la victoire 
             if jeu.verifier_victoire(adversaire):
                 jeu.victoires_joueur2 += 1
+
+                # enregistrer la partie dans le fichier CSV
+                enregistrer_partie(
+                    mode="IA",
+                    vainqueur="IA",
+                    coups_joueur=jeu.coups_joueur,
+                    coups_ia=jeu.coups_ia
+                )
 
                 choix = messagebox.askquestion(
                     "Défaite",

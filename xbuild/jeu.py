@@ -53,6 +53,10 @@ grilles = {1: grille_joueur1, 2: grille_joueur2}
 # Joueur dont c'est le tour (1 ou 2)
 joueur_actuel = 1
 
+#compteur de coups, pour csv
+coups_joueur = 0
+coups_ia = 0
+
 
 # ==================== FONCTIONS DE GESTION DES TOURS ====================
 
@@ -223,9 +227,11 @@ def reset_session():
     """
     Réinitialise toute la session 
     """
-    global victoires_joueur1, victoires_joueur2
+    global victoires_joueur1, victoires_joueur2, coups_joueur, coups_ia
     victoires_joueur1 = 0
     victoires_joueur2 = 0
+    coups_joueur = 0
+    coups_ia = 0
     reset_jeu()
 
 # ==================== FONCTIONS DE DÉTECTION DE BATEAUX ====================

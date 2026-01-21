@@ -26,11 +26,11 @@ victoires_joueur2 = 0 #idem
 
 # Définition des bateaux disponibles (nom: taille)
 TAILLES_BATEAUX = {
-    "bateaudetaille_5": 5,
-    "bateaudetaille_4": 4,
-    "bateaudetaille_3": 3,
-    "deuxiemebateaudetaille_3": 3,
-    "bateaudetaille_2": 2
+    "Porte-avions": 5,
+    "Croiseur": 4,
+    "Contre-torpilleurs": 3,
+    "Contre-torpilleuuurs": 3,
+    "Torpilleur": 2
 }
 
 

@@ -45,7 +45,7 @@ def initialiser_phase_tir(frame, theme):
         widget.destroy()
     
     # Créer les deux panneaux (grille joueur + grille de tir)
-    p = tk.PanedWindow(frame, orient=tk.HORIZONTAL)
+    p = tk.PanedWindow(f_phase_tir, orient=tk.HORIZONTAL, width=1100, height=650)
     p.pack(fill='both', expand=True)
 
     panel_joueur = tk.Frame(p, width=120, bg=theme["frame"])

@@ -8,6 +8,7 @@ Ce module contient :
 
 import tkinter as tk
 from tkinter.messagebox import showinfo
+import apparence as app
 
 
 # ==================== CONSTANTES ====================
@@ -85,7 +86,11 @@ def creer_bouton(parent, lignes_texte, largeur, hauteur, taille_principale,
         btn.bind('<Button-1>', _executer_au_clic)
 
     btn.pack(fill='x', padx=10, pady=10)  # Faire en sorte que le bouton prenne toute la largeur
+    app.ajouter_effet_survol(btn, app.theme_actuel)
+    for widget in btn.winfo_children():
+        app.ajouter_effet_survol(widget, app.theme_actuel)
 
+    return btn
     return btn
 
 

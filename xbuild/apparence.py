@@ -13,39 +13,43 @@ import tkinter as tk
 # ==================== DÉFINITION DES THÈMES ====================
 
 THEME_BLEU = {
-    "bg": "#006E6E",
-    "frame": "#006E6E",
-    "grid": "lightblue",
-    "button": "#4FA3A3",
-    "text": "white",
-    "boat": "white"
+    "bg": "#1a1a2e",
+    "frame": "#16213e",
+    "button": "#0f3460",
+    "text": "#e8e8e8",
+    "grid": "#533483",
+    "boat": "#e94560",
+    "hover": "#1a5c8a" 
 }
 
 THEME_SOMBRE = {
-    "bg": "#1E1E1E",
-    "frame": "#1E1E1E",
-    "grid": "#444444",
-    "button": "#333333",
-    "text": "white",
-    "boat": "white"
+    "bg": "#0d1117",
+    "frame": "#161b22",
+    "button": "#21262d",
+    "text": "#c9d1d9",
+    "grid": "#30363d",
+    "boat": "#58a6ff",
+    "hover": "#388bfd"
 }
 
 THEME_CLASSIQUE = {
-    "bg": "#F0F0F0",
-    "frame": "#F0F0F0",
-    "grid": "white",
-    "button": "#E0E0E0",
-    "text": "black",
-    "boat": "white"
+    "bg": "#f0f0f0",
+    "frame": "#ffffff",
+    "button": "#e0e0e0",
+    "text": "#000000",
+    "grid": "#b0c4de",
+    "boat": "#4682b4",
+    "hover": "#5a9bd4"
 }
 
 THEME_ROSE = {
-    "bg": "#FFB6C1",
-    "frame": "#FFB6C1",
-    "grid": "#FFDDEE",
-    "button": "#FF99AA",
-    "text": "black",
-    "boat": "white"
+    "bg": "#ffe4e1",
+    "frame": "#fff0f5",
+    "button": "#ffb6c1",
+    "text": "#8b0000",
+    "grid": "#ffc0cb",
+    "boat": "#ff69b4",
+    "hover": "#ff85c1"
 }
 
 # Thème par défaut
@@ -93,8 +97,9 @@ def appliquer_theme(theme, root, frames, boutons_pvp, boutons_ia):
     # rafraîchir les grilles
     if boutons_pvp:
         refresh_grille(boutons_pvp, jeu.grille_joueur(1), theme)
+        refresh_mini_grille(boutons_pvp, jeu.grille_joueur(1), theme)
     if boutons_ia:
-        refresh_grille(boutons_ia, jeu.grille_joueur(2), theme)
+        refresh_mini_grille(boutons_ia, jeu.grille_joueur(2), theme)
 
 def refresh_grille(boutons, grille, theme):
     """
@@ -107,14 +112,41 @@ def refresh_grille(boutons, grille, theme):
     """
     import jeu
     
-    for i in range(len(grille)):
-        for j in range(len(grille[i])):
-            etat = grille[i][j]
-            if etat == jeu.BATEAU:
-                boutons[i][j].configure(bg=theme["boat"])
-            else:
-                boutons[i][j].configure(bg=theme["grid"])
+    for i in range(10):
+        for j in range(10):
+            case = grille[i][j]
+            
+            if case == jeu.BATEAU:
+                boutons[i][j].config(bg=theme["boat"])
+            elif case == jeu.TOUCHE:
+                boutons[i][j].config(bg="red", text="X")
+            elif case == jeu.RATE:
+                boutons[i][j].config(bg="black", text="O")
+            elif case == jeu.COULE:
+                boutons[i][j].config(bg="darkred", text="⚓")
+            else:  # VIDE
+                boutons[i][j].config(bg=theme["grid"], text="")
 
+def refresh_mini_grille(mini_grille, grille, theme):
+    """
+    Met à jour la mini-grille affichant l'état du joueur.
+    """
+    import jeu
+
+    for i in range(10):
+        for j in range(10):
+            case = grille[i][j]
+
+            if case == jeu.BATEAU:
+                mini_grille[i][j].config(bg=theme["boat"])
+            elif case == jeu.TOUCHE:
+                mini_grille[i][j].config(bg="red")
+            elif case == jeu.RATE:
+                mini_grille[i][j].config(bg="black")
+            elif case == jeu.COULE:
+                mini_grille[i][j].config(bg="white")
+            else:  # VIDE
+                mini_grille[i][j].config(bg=theme["grid"])
 
 def changer_theme(theme, root, frames, boutons_pvp, boutons_ia):
     """
@@ -136,3 +168,45 @@ def get_theme_actuel():
     """Retourne le thème actuellement utilisé."""
     return theme_actuel
 
+# ==================== EFFETS DE SURVOL ====================
+
+def ajouter_effet_survol(widget, theme):
+    """
+    Ajoute un effet de survol à un widget (bouton, case, etc.).
+    Change la couleur et le curseur au survol.
+    """
+    couleur_normale = widget.cget("bg")
+    couleur_survol = theme.get("hover", theme["button"])
+    
+    def on_enter(event):
+        widget.config(bg=couleur_survol, cursor="hand2")
+    
+    def on_leave(event):
+        widget.config(bg=couleur_normale, cursor="")
+    
+    widget.bind("<Enter>", on_enter)
+    widget.bind("<Leave>", on_leave)
+
+
+def ajouter_effet_survol_grille(bouton, theme):
+    """
+    Ajoute un effet de survol spécifique pour les cases de grille.
+    Ne change la couleur que si la case n'a pas encore été jouée.
+    """
+    def on_enter(event):
+        if bouton['relief'] == 'raised':  # Case non jouée
+            bouton.config(cursor="crosshair")
+            # Légère surbrillance
+            couleur_actuelle = bouton.cget("bg")
+            if couleur_actuelle == theme["grid"]:
+                bouton.config(bg=theme["hover"])
+    
+    def on_leave(event):
+        if bouton['relief'] == 'raised':
+            bouton.config(cursor="")
+            couleur_actuelle = bouton.cget("bg")
+            if couleur_actuelle == theme["hover"]:
+                bouton.config(bg=theme["grid"])
+    
+    bouton.bind("<Enter>", on_enter)
+    bouton.bind("<Leave>", on_leave)

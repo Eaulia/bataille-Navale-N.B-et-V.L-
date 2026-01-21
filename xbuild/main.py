@@ -20,7 +20,7 @@ import sons
 
 root = tk.Tk()
 root.title('Bataille navale')
-root.geometry('780x550')
+root.geometry('900x750')
 root.configure(bg=app.theme_actuel["bg"]) 
 sons.jouer_musique("ambiance", loop=-1, volume=0.1)
 
@@ -122,15 +122,15 @@ tk.Button(f4, text='Retour', command=lambda: fn.swap_frames(f4, f1)).pack(pady=5
 
 # ==================== FRAME 2 : MODE JOUEUR CONTRE JOUEUR (pas finit) ====================
 
-tk.Label(f2, text='Bienvenue dans ma Bataille Navale ;D', font=('Arial',14,'bold')).pack(pady=10)
+titre_pvp = tk.Label(f2, text='🎯 Bienvenue dans ma Bataille Navale ! 🎯',font=('Helvetica', 20, 'bold'),bg=app.theme_actuel["bg"],fg=app.theme_actuel["text"]).pack(pady=15)
 
 # Panneaux
-p = tk.PanedWindow(f2, orient=tk.HORIZONTAL, width=665, height=440)
+p = tk.PanedWindow(f2, orient=tk.HORIZONTAL, width=1000, height=600)
 p.pack_propagate(False)
 p.pack(side=tk.TOP, pady=2, padx=2)
 
-panel1 = fn.panel(p, 200, 250, app.theme_actuel, 'Bateaux Disponibles')
-panel2 = fn.panel(p, 250, 600, app.theme_actuel, 'Interface de Jeu')
+panel1 = fn.panel(p, 250, 580, app.theme_actuel, 'Bateaux Disponibles')
+panel2 = fn.panel(p, 600, 580, app.theme_actuel, 'Interface de Jeu')
 
 p.add(panel1)
 p.add(panel2)
@@ -158,6 +158,7 @@ for i in range(10):
         b.grid(row=i, column=j, sticky="nsew", padx=1, pady=1)
         b.bind("<Button-1>", lambda e, l=i, c=j: fn.clic_placement_bateau(l, c, boutons_pvp, app.theme_actuel))
         b.bind("<Motion>", lambda e, l=i, c=j: fn.previsualiser_placement(l, c, boutons_pvp, app.theme_actuel))
+        app.ajouter_effet_survol_grille(b, app.theme_actuel)
         ligne.append(b)
     boutons_pvp.append(ligne)
 
@@ -192,12 +193,12 @@ tk.Button(f2, text='Retour', command=lambda: fn.swap_frames(f2, f4)).pack(pady=5
 tk.Label(f5, text='Bienvenue dans ma Bataille Navale ;D', font=('Arial', 14, 'bold')).pack(pady=10)
 
 # Créer les panneaux
-p = tk.PanedWindow(f5, orient=tk.HORIZONTAL, width=665, height=440)
+p = tk.PanedWindow(f5, orient=tk.HORIZONTAL, width=1000, height=600)
 p.pack_propagate(False)
 p.pack(fill='both', expand=True, pady=2, padx=2)
 
-panel1 = fn.panel(p, 200, 250, app.theme_actuel, 'Bateaux Disponibles')
-panel2 = fn.panel(p, 250, 600, app.theme_actuel, 'Interface de Jeu')
+panel1 = fn.panel(p, 250, 580, app.theme_actuel, 'Bateaux Disponibles')
+panel2 = fn.panel(p, 600, 580, app.theme_actuel, 'Interface de Jeu')
 
 # Créer le panneau de bateaux disponibles dans panel1 (on l'ajoutera au paned window)
 plc.drag_widgets_ia, plc.orientation_label_ia = fn.creer_panneau_bateaux(panel1, 1, app.theme_actuel)
@@ -229,6 +230,7 @@ for i in range(10):
         b.grid(row=i, column=j, sticky="nsew", padx=1, pady=1)
         b.bind("<Button-1>", lambda e, l=i, c=j: fn.clic_placement_bateau_ia(l, c, boutons_ia, app.theme_actuel))
         b.bind("<Motion>", lambda e, l=i, c=j: fn.previsualiser_placement(l, c, boutons_ia, app.theme_actuel))
+        app.ajouter_effet_survol_grille(b, app.theme_actuel)
         ligne.append(b)
     boutons_ia.append(ligne)
 
